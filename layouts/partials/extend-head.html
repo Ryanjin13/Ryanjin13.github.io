@@ -16,12 +16,44 @@ article {
   font-size: 14px;
 }
 
-/* Homepage spacing - more whitespace before recent */
-.homepage-content {
-  margin-top: 30vh;
+/* Remove all underlines */
+a {
+  text-decoration: none !important;
 }
 
-/* Hamburger Button - Fixed on left, moved more right */
+/* Hero background image - top only with fade */
+.hero-image {
+  position: relative;
+  width: 100%;
+  height: 70vh;
+  background: url('/img/background.jpg') center center / cover no-repeat;
+  margin-bottom: 0;
+}
+.hero-image::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(to bottom, transparent, var(--color-neutral-50, #fff));
+}
+.dark .hero-image::after {
+  background: linear-gradient(to bottom, transparent, var(--color-neutral-900, #111));
+}
+
+/* Homepage spacing - full page whitespace before recent */
+.homepage-spacer {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+main.homepage > section:first-of-type {
+  margin-top: 80vh;
+}
+
+/* Hamburger Button - Fixed on left */
 .hamburger-btn {
   position: fixed;
   left: 60px;
@@ -51,14 +83,10 @@ article {
   border-radius: 2px;
   transition: all 0.3s ease;
 }
-.hamburger-btn.active span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-.hamburger-btn.active span:nth-child(2) {
+/* Hide hamburger when menu is open */
+.hamburger-btn.active {
   opacity: 0;
-}
-.hamburger-btn.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
+  pointer-events: none;
 }
 
 /* Slide Menu - Brighter */
@@ -78,6 +106,49 @@ article {
 .slide-menu.active {
   left: 0;
 }
+
+/* Close button edge on right side of menu */
+.menu-close-edge {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(0,0,0,0.05));
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.menu-close-edge:hover {
+  background: linear-gradient(to right, transparent, rgba(0,0,0,0.1));
+}
+.menu-close-edge::after {
+  content: '';
+  width: 3px;
+  height: 40px;
+  background: #ccc;
+  border-radius: 2px;
+}
+
+/* Close button in header */
+.menu-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 50px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  padding: 5px 10px;
+  transition: color 0.2s;
+}
+.menu-close-btn:hover {
+  color: #333;
+}
+
 .slide-menu-header {
   font-size: 11px;
   font-weight: 600;
@@ -94,7 +165,7 @@ article {
   margin: 0;
 }
 .slide-menu > ul > li {
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 
 /* Main category */
@@ -103,7 +174,7 @@ article {
   align-items: center;
   padding: 10px 12px;
   color: #333;
-  text-decoration: none;
+  text-decoration: none !important;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
@@ -130,24 +201,26 @@ article {
   color: #bbb;
 }
 
-/* Subcategory */
+/* Subcategory - more indentation */
 .subcategory-list {
   display: none;
-  padding-left: 20px;
+  padding-left: 35px;
   margin-top: 5px;
+  margin-left: 10px;
+  border-left: 1px solid #eee;
 }
 .subcategory-list.show {
   display: block;
 }
 .subcategory-list li {
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 .subcategory-list a {
   display: flex;
   align-items: center;
   padding: 8px 12px;
   color: #666;
-  text-decoration: none;
+  text-decoration: none !important;
   font-size: 12px;
   border-radius: 5px;
   transition: all 0.2s ease;
@@ -202,12 +275,24 @@ article {
   background: #252525;
   color: #fff;
 }
+.dark .subcategory-list {
+  border-left-color: #333;
+}
 .dark .subcategory-list a {
   color: #999;
 }
 .dark .subcategory-list a:hover {
   background: #222;
   color: #fff;
+}
+.dark .menu-close-btn {
+  color: #666;
+}
+.dark .menu-close-btn:hover {
+  color: #fff;
+}
+.dark .menu-close-edge::after {
+  background: #444;
 }
 
 /* Mobile */
@@ -221,6 +306,9 @@ article {
   .slide-menu {
     width: 280px;
     left: -300px;
+  }
+  .hero-image {
+    height: 50vh;
   }
 }
 </style>

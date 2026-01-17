@@ -10,6 +10,12 @@
 
 <!-- Slide Menu with Categories/Subcategories -->
 <nav class="slide-menu" id="slideMenu">
+  <!-- Close button -->
+  <button class="menu-close-btn" id="menuCloseBtn" aria-label="Close Menu">&times;</button>
+
+  <!-- Close edge on right -->
+  <div class="menu-close-edge" id="menuCloseEdge"></div>
+
   <div class="slide-menu-header">Categories</div>
   <ul>
     <!-- Humanoid Robot -->
@@ -174,6 +180,8 @@
   const toggle = document.getElementById('menuToggle');
   const menu = document.getElementById('slideMenu');
   const overlay = document.getElementById('menuOverlay');
+  const closeBtn = document.getElementById('menuCloseBtn');
+  const closeEdge = document.getElementById('menuCloseEdge');
 
   function openMenu() {
     toggle.classList.add('active');
@@ -198,6 +206,8 @@
   });
 
   overlay.addEventListener('click', closeMenu);
+  closeBtn.addEventListener('click', closeMenu);
+  closeEdge.addEventListener('click', closeMenu);
 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeMenu();
@@ -222,7 +232,6 @@
 
 function toggleSubcategory(el) {
   const subList = el.nextElementSibling;
-  const toggle = el.querySelector('.toggle');
 
   if (subList && subList.classList.contains('subcategory-list')) {
     subList.classList.toggle('show');
