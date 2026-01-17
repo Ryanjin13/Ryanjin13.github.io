@@ -21,10 +21,11 @@ a {
   text-decoration: none !important;
 }
 
-/* Hero background image - top only with fade */
+/* Hero background image - full width with white fade */
 .hero-image {
   position: relative;
-  width: 100%;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
   height: 70vh;
   background: url('/img/background.jpg') center center / cover no-repeat;
   margin-bottom: 0;
@@ -35,11 +36,12 @@ a {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 200px;
-  background: linear-gradient(to bottom, transparent, var(--color-neutral-50, #fff));
+  height: 50%;
+  background: linear-gradient(to bottom, transparent, #ffffff);
+  pointer-events: none;
 }
 .dark .hero-image::after {
-  background: linear-gradient(to bottom, transparent, var(--color-neutral-900, #111));
+  background: linear-gradient(to bottom, transparent, #111111);
 }
 
 /* Homepage spacing - full page whitespace before recent */
@@ -157,7 +159,6 @@ main.homepage > section:first-of-type {
   letter-spacing: 1.5px;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
 }
 .slide-menu ul {
   list-style: none;
@@ -207,7 +208,6 @@ main.homepage > section:first-of-type {
   padding-left: 35px;
   margin-top: 5px;
   margin-left: 10px;
-  border-left: 1px solid #eee;
 }
 .subcategory-list.show {
   display: block;
@@ -274,9 +274,6 @@ main.homepage > section:first-of-type {
 .dark .category-main:hover {
   background: #252525;
   color: #fff;
-}
-.dark .subcategory-list {
-  border-left-color: #333;
 }
 .dark .subcategory-list a {
   color: #999;
