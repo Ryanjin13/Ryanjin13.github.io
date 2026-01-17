@@ -1,7 +1,7 @@
-<!-- Google Fonts - Clean font -->
+<!-- Google Fonts - Clean font + Stylish title font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
 
 <style>
 /* Global font settings - smaller & cleaner */
@@ -54,13 +54,13 @@ a, a:hover, a:focus, a:active, a:visited {
   text-decoration: none !important;
 }
 
-/* Hero background - fixed, fades on scroll via JS */
+/* Hero background - fixed below header, fades on scroll via JS */
 .hero-background {
   position: fixed;
-  top: 0;
+  top: 60px;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 60px);
   background: url('/img/background.jpg') center center / cover no-repeat;
   z-index: -1;
   transition: opacity 0.1s ease;
@@ -68,6 +68,18 @@ a, a:hover, a:focus, a:active, a:visited {
 /* Spacer to push content down */
 .hero-spacer {
   height: 70vh;
+}
+
+/* Site title - larger and elegant font */
+header a[href="/"],
+.site-title,
+header .font-bold,
+nav a[href="/"] {
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 28px !important;
+  font-weight: 300 !important;
+  letter-spacing: 2px !important;
+  text-transform: lowercase !important;
 }
 
 /* Homepage spacing - full page whitespace before recent */
