@@ -16,30 +16,38 @@ article {
   font-size: 14px;
 }
 
-/* Remove ALL underlines everywhere */
+/* Remove ALL underlines everywhere - including Blowfish theme styles */
 a, a:hover, a:focus, a:active, a:visited,
 .slide-menu a, .slide-menu a:hover,
 .slide-menu .subcategory-list a,
 .slide-menu .subcategory-list a:hover,
 .category-main, .subcategory-list a,
 nav a, header a,
-#slideMenu a, #slideMenu a:hover {
+#slideMenu a, #slideMenu a:hover,
+article a, .prose a, main a,
+[class*="menu"] a, [class*="nav"] a {
   text-decoration: none !important;
   border-bottom: none !important;
   box-shadow: none !important;
   background-image: none !important;
+  background: none !important;
   text-underline-offset: unset !important;
   text-decoration-line: none !important;
-  text-decoration-style: none !important;
+  text-decoration-style: unset !important;
   text-decoration-color: transparent !important;
+  -webkit-text-decoration: none !important;
+  border: none !important;
 }
-/* Override any theme link styles */
-.slide-menu a::before,
-.slide-menu a::after,
-.subcategory-list a::before,
-.subcategory-list a::after {
+/* Override Blowfish theme underline animations */
+a span, a::before, a::after,
+.slide-menu a span, .slide-menu a::before, .slide-menu a::after,
+.subcategory-list a span, .subcategory-list a::before, .subcategory-list a::after {
   display: none !important;
   content: none !important;
+  background: none !important;
+  border: none !important;
+  height: 0 !important;
+  width: 0 !important;
 }
 
 /* Hero background image - fixed with top & bottom fade */
@@ -63,15 +71,20 @@ nav a, header a,
   pointer-events: none;
   z-index: 1;
 }
-/* Bottom fadeout */
+/* Bottom fadeout - longer and more gradual */
 .hero-image::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 50%;
-  background: linear-gradient(to bottom, transparent, #ffffff);
+  height: 80%;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(255,255,255,0.1) 30%,
+    rgba(255,255,255,0.4) 50%,
+    rgba(255,255,255,0.7) 70%,
+    #ffffff 100%);
   pointer-events: none;
 }
 /* Dark mode adjustments */
@@ -79,7 +92,12 @@ nav a, header a,
   background: linear-gradient(to bottom, #111111, transparent);
 }
 .dark .hero-image::after {
-  background: linear-gradient(to bottom, transparent, #111111);
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(17,17,17,0.1) 30%,
+    rgba(17,17,17,0.4) 50%,
+    rgba(17,17,17,0.7) 70%,
+    #111111 100%);
 }
 
 /* Homepage spacing - full page whitespace before recent */
