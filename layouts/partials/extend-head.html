@@ -70,9 +70,8 @@ a, a:hover, a:focus, a:active, a:visited {
   height: 70vh;
 }
 
-/* Site title - larger and elegant font */
+/* Header site title - elegant font */
 header a[href="/"],
-.site-title,
 header .font-bold,
 nav a[href="/"] {
   font-family: 'Cormorant Garamond', Georgia, serif !important;
@@ -80,6 +79,20 @@ nav a[href="/"] {
   font-weight: 300 !important;
   letter-spacing: 2px !important;
   text-transform: lowercase !important;
+}
+
+/* Main page title - big, white, elegant */
+main h1,
+.homepage h1,
+article > h1:first-of-type,
+.prose h1:first-of-type {
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 72px !important;
+  font-weight: 300 !important;
+  color: #ffffff !important;
+  letter-spacing: 4px !important;
+  text-transform: lowercase !important;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.3) !important;
 }
 
 /* Homepage spacing - full page whitespace before recent */
@@ -129,7 +142,7 @@ main.homepage > section:first-of-type {
   pointer-events: none;
 }
 
-/* Slide Menu - Brighter */
+/* Slide Menu - Brighter, no scrollbar */
 .slide-menu {
   position: fixed;
   left: -350px;
@@ -142,6 +155,11 @@ main.homepage > section:first-of-type {
   overflow-y: auto;
   padding: 30px 25px;
   box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.slide-menu::-webkit-scrollbar {
+  display: none;
 }
 .slide-menu.active {
   left: 0;
