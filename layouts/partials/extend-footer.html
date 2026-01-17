@@ -1,0 +1,64 @@
+<!-- Hamburger Button -->
+<button class="hamburger-btn" id="menuToggle" aria-label="Toggle Menu">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<!-- Overlay -->
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<!-- Slide Menu -->
+<nav class="slide-menu" id="slideMenu">
+  <h3>Categories</h3>
+  <ul>
+    <li><a href="{{ "categories/humanoid-robot/" | relURL }}">Humanoid Robot</a></li>
+    <li><a href="{{ "categories/autonomous-driving/" | relURL }}">Autonomous Driving</a></li>
+    <li><a href="{{ "categories/spiking-neural-network/" | relURL }}">Spiking Neural Network</a></li>
+    <li><a href="{{ "categories/3d-vision/" | relURL }}">3D Vision</a></li>
+    <li><a href="{{ "categories/2d-vision/" | relURL }}">2D Vision</a></li>
+    <li><a href="{{ "categories/ai-accelerator/" | relURL }}">AI Accelerator</a></li>
+    <li><a href="{{ "categories/llm/" | relURL }}">LLM</a></li>
+    <li><a href="{{ "categories/artificial-intelligence/" | relURL }}">Artificial Intelligence</a></li>
+    <li><a href="{{ "categories/computer-science/" | relURL }}">Computer Science</a></li>
+    <li><a href="{{ "categories/circuits/" | relURL }}">Circuits</a></li>
+    <li><a href="{{ "categories/quantum/" | relURL }}">Quantum</a></li>
+    <li><a href="{{ "categories/math/" | relURL }}">Math</a></li>
+  </ul>
+</nav>
+
+<script>
+(function() {
+  const toggle = document.getElementById('menuToggle');
+  const menu = document.getElementById('slideMenu');
+  const overlay = document.getElementById('menuOverlay');
+
+  function openMenu() {
+    toggle.classList.add('active');
+    menu.classList.add('active');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    toggle.classList.remove('active');
+    menu.classList.remove('active');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  toggle.addEventListener('click', function() {
+    if (menu.classList.contains('active')) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  overlay.addEventListener('click', closeMenu);
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeMenu();
+  });
+})();
+</script>

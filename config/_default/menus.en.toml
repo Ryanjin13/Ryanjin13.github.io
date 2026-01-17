@@ -1,4 +1,4 @@
-# -- Main Menu --
+# -- Main Menu (Top Navigation - Simplified) --
 
 [[main]]
   name = "Posts"
@@ -14,68 +14,6 @@
   name = "Tags"
   pageRef = "tags"
   weight = 30
-
-# -- Subnavigation (Left Sidebar Categories) --
-
-[[subnavigation]]
-  name = "Humanoid Robot"
-  pageRef = "categories/humanoid-robot"
-  weight = 10
-
-[[subnavigation]]
-  name = "Autonomous Driving"
-  pageRef = "categories/autonomous-driving"
-  weight = 20
-
-[[subnavigation]]
-  name = "Spiking Neural Network"
-  pageRef = "categories/spiking-neural-network"
-  weight = 30
-
-[[subnavigation]]
-  name = "3D Vision"
-  pageRef = "categories/3d-vision"
-  weight = 40
-
-[[subnavigation]]
-  name = "2D Vision"
-  pageRef = "categories/2d-vision"
-  weight = 50
-
-[[subnavigation]]
-  name = "AI Accelerator"
-  pageRef = "categories/ai-accelerator"
-  weight = 60
-
-[[subnavigation]]
-  name = "LLM"
-  pageRef = "categories/llm"
-  weight = 70
-
-[[subnavigation]]
-  name = "Artificial Intelligence"
-  pageRef = "categories/artificial-intelligence"
-  weight = 80
-
-[[subnavigation]]
-  name = "Computer Science"
-  pageRef = "categories/computer-science"
-  weight = 90
-
-[[subnavigation]]
-  name = "Circuits"
-  pageRef = "categories/circuits"
-  weight = 100
-
-[[subnavigation]]
-  name = "Quantum"
-  pageRef = "categories/quantum"
-  weight = 110
-
-[[subnavigation]]
-  name = "Math"
-  pageRef = "categories/math"
-  weight = 120
 
 # -- Footer Menu --
 
