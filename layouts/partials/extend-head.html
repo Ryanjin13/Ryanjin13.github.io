@@ -16,12 +16,33 @@ article {
   font-size: 14px;
 }
 
-/* Remove all underlines */
-a {
+/* Remove ALL underlines everywhere */
+a, a:hover, a:focus, a:active, a:visited,
+.slide-menu a, .slide-menu a:hover,
+.slide-menu .subcategory-list a,
+.slide-menu .subcategory-list a:hover,
+.category-main, .subcategory-list a,
+nav a, header a,
+#slideMenu a, #slideMenu a:hover {
   text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+  text-underline-offset: unset !important;
+  text-decoration-line: none !important;
+  text-decoration-style: none !important;
+  text-decoration-color: transparent !important;
+}
+/* Override any theme link styles */
+.slide-menu a::before,
+.slide-menu a::after,
+.subcategory-list a::before,
+.subcategory-list a::after {
+  display: none !important;
+  content: none !important;
 }
 
-/* Hero background image - full width with white fade */
+/* Hero background image - full width with top & bottom fade */
 .hero-image {
   position: relative;
   width: 100vw;
@@ -30,6 +51,19 @@ a {
   background: url('/img/background.jpg') center center / cover no-repeat;
   margin-bottom: 0;
 }
+/* Top fadeout */
+.hero-image::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: linear-gradient(to bottom, #ffffff, transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+/* Bottom fadeout */
 .hero-image::after {
   content: '';
   position: absolute;
@@ -39,6 +73,10 @@ a {
   height: 50%;
   background: linear-gradient(to bottom, transparent, #ffffff);
   pointer-events: none;
+}
+/* Dark mode adjustments */
+.dark .hero-image::before {
+  background: linear-gradient(to bottom, #111111, transparent);
 }
 .dark .hero-image::after {
   background: linear-gradient(to bottom, transparent, #111111);
