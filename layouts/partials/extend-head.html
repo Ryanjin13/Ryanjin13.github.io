@@ -16,38 +16,42 @@ article {
   font-size: 14px;
 }
 
-/* Remove ALL underlines everywhere - including Blowfish theme styles */
-a, a:hover, a:focus, a:active, a:visited,
-.slide-menu a, .slide-menu a:hover,
-.slide-menu .subcategory-list a,
-.slide-menu .subcategory-list a:hover,
-.category-main, .subcategory-list a,
-nav a, header a,
-#slideMenu a, #slideMenu a:hover,
-article a, .prose a, main a,
-[class*="menu"] a, [class*="nav"] a {
+/* FORCE remove ALL underlines in slide menu */
+.slide-menu,
+.slide-menu *,
+.slide-menu a,
+.slide-menu div,
+.slide-menu span,
+.slide-menu li,
+.slide-menu ul,
+#slideMenu,
+#slideMenu *,
+.category-main,
+.subcategory-list,
+.subcategory-list a,
+.slide-menu-header {
   text-decoration: none !important;
   border-bottom: none !important;
   box-shadow: none !important;
   background-image: none !important;
-  background: none !important;
-  text-underline-offset: unset !important;
-  text-decoration-line: none !important;
-  text-decoration-style: unset !important;
-  text-decoration-color: transparent !important;
   -webkit-text-decoration: none !important;
-  border: none !important;
+  text-decoration-line: none !important;
+  background-size: 0 !important;
+  background-repeat: no-repeat !important;
 }
-/* Override Blowfish theme underline animations */
-a span, a::before, a::after,
-.slide-menu a span, .slide-menu a::before, .slide-menu a::after,
-.subcategory-list a span, .subcategory-list a::before, .subcategory-list a::after {
+.slide-menu *::before,
+.slide-menu *::after,
+#slideMenu *::before,
+#slideMenu *::after {
   display: none !important;
   content: none !important;
   background: none !important;
-  border: none !important;
   height: 0 !important;
   width: 0 !important;
+}
+/* General link underline removal */
+a, a:hover, a:focus, a:active, a:visited {
+  text-decoration: none !important;
 }
 
 /* Hero background image - fixed with top & bottom fade */
@@ -215,6 +219,13 @@ main.homepage > section:first-of-type {
   letter-spacing: 1.5px;
   margin-bottom: 20px;
   padding-bottom: 15px;
+  background-image: none !important;
+  border-bottom: none !important;
+  text-decoration: none !important;
+}
+.slide-menu-header::after,
+.slide-menu-header::before {
+  display: none !important;
 }
 .slide-menu ul {
   list-style: none;
@@ -225,8 +236,9 @@ main.homepage > section:first-of-type {
   margin-bottom: 5px;
 }
 
-/* Main category */
-.category-main {
+/* Main category - no underlines */
+.category-main,
+.category-main * {
   display: flex;
   align-items: center;
   padding: 10px 12px;
@@ -237,6 +249,15 @@ main.homepage > section:first-of-type {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  background-image: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+.category-main::after,
+.category-main::before {
+  display: none !important;
+  content: none !important;
+  background: none !important;
 }
 .category-main:hover {
   background: #f5f5f5;
