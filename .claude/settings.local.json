@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:wiredwisdom.tistory.com)",
+      "Bash(bundle install:*)",
+      "Bash(ruby --version:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:ryanjin13.github.io)",
+      "WebFetch(domain:github.com)",
+      "Bash(hugo version:*)",
+      "Bash(winget install:*)",
+      "Bash(hugo new:*)",
+      "Bash(cmd.exe /c \"cd /d C:\\\\Users\\\\kisme\\\\Ryanjin13.github.io && hugo new site . --force\")",
+      "Bash(powershell.exe -Command \"cd ''C:\\\\Users\\\\kisme\\\\Ryanjin13.github.io''; hugo new site . --force\")",
+      "Bash(\"/c/Users/kisme/AppData/Local/Microsoft/WinGet/Packages/Hugo.Hugo.Extended_Microsoft.Winget.Source_8wekyb3d8bbwe/hugo.exe\" new site \"C:/Users/kisme/Ryanjin13.github.io\" --force)",
+      "Bash(\"/c/Users/kisme/AppData/Local/Microsoft/WinGet/Packages/Hugo.Hugo.Extended_Microsoft.Winget.Source_8wekyb3d8bbwe/hugo.exe\" -s \"C:/Users/kisme/Ryanjin13.github.io\" --gc --minify)"
+    ]
+  }
+}
