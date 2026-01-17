@@ -1,88 +1,165 @@
+<!-- Google Fonts - Clean font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
-/* Hamburger Button - Fixed on left */
+/* Global font settings - smaller & cleaner */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 14px !important;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+article {
+  font-size: 14px;
+}
+
+/* Homepage spacing - more whitespace before recent */
+.homepage-content {
+  margin-top: 30vh;
+}
+
+/* Hamburger Button - Fixed on left, moved more right */
 .hamburger-btn {
   position: fixed;
-  left: 20px;
+  left: 60px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 1000;
-  background: var(--neutral-800);
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px;
+  padding: 10px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  gap: 4px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
 }
 .hamburger-btn:hover {
-  background: var(--neutral-700);
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 .hamburger-btn span {
   display: block;
-  width: 24px;
-  height: 3px;
-  background: var(--neutral-100);
+  width: 20px;
+  height: 2px;
+  background: #333;
   border-radius: 2px;
   transition: all 0.3s ease;
 }
 .hamburger-btn.active span:nth-child(1) {
-  transform: rotate(45deg) translate(6px, 6px);
+  transform: rotate(45deg) translate(5px, 5px);
 }
 .hamburger-btn.active span:nth-child(2) {
   opacity: 0;
 }
 .hamburger-btn.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(6px, -6px);
+  transform: rotate(-45deg) translate(5px, -5px);
 }
 
-/* Slide Menu */
+/* Slide Menu - Brighter */
 .slide-menu {
   position: fixed;
-  left: -320px;
+  left: -350px;
   top: 0;
-  width: 300px;
+  width: 320px;
   height: 100vh;
-  background: var(--neutral-900);
+  background: #ffffff;
   z-index: 999;
   transition: left 0.3s ease;
   overflow-y: auto;
-  padding: 80px 20px 20px;
-  box-shadow: 2px 0 20px rgba(0,0,0,0.5);
+  padding: 30px 25px;
+  box-shadow: 4px 0 30px rgba(0,0,0,0.15);
 }
 .slide-menu.active {
   left: 0;
 }
-.slide-menu h3 {
-  color: var(--neutral-300);
-  font-size: 0.8rem;
+.slide-menu-header {
+  font-size: 11px;
+  font-weight: 600;
+  color: #999;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--neutral-700);
+  letter-spacing: 1.5px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
 }
 .slide-menu ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
-.slide-menu li {
-  margin-bottom: 5px;
+.slide-menu > ul > li {
+  margin-bottom: 8px;
 }
-.slide-menu a {
-  display: block;
-  padding: 12px 15px;
-  color: var(--neutral-200);
+
+/* Main category */
+.category-main {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  color: #333;
   text-decoration: none;
   border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
-.slide-menu a:hover {
-  background: var(--neutral-800);
-  color: var(--primary-400);
+.category-main:hover {
+  background: #f5f5f5;
+  color: #000;
+}
+.category-main .toggle {
+  margin-right: 8px;
+  font-size: 10px;
+  color: #aaa;
+  transition: transform 0.2s;
+  width: 12px;
+}
+.category-main.expanded .toggle {
+  transform: rotate(90deg);
+}
+.category-main .count {
+  margin-left: auto;
+  font-size: 11px;
+  color: #bbb;
+}
+
+/* Subcategory */
+.subcategory-list {
+  display: none;
+  padding-left: 20px;
+  margin-top: 5px;
+}
+.subcategory-list.show {
+  display: block;
+}
+.subcategory-list li {
+  margin-bottom: 3px;
+}
+.subcategory-list a {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  color: #666;
+  text-decoration: none;
+  font-size: 12px;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+}
+.subcategory-list a:hover {
+  background: #f8f8f8;
+  color: #333;
+}
+.subcategory-list .count {
+  margin-left: auto;
+  font-size: 10px;
+  color: #ccc;
 }
 
 /* Overlay */
@@ -92,7 +169,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.3);
   z-index: 998;
   opacity: 0;
   visibility: hidden;
@@ -103,38 +180,47 @@
   visibility: visible;
 }
 
-/* Light mode adjustments */
-.light .hamburger-btn {
-  background: var(--neutral-100);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+/* Dark mode adjustments */
+.dark .hamburger-btn {
+  background: rgba(30, 30, 30, 0.95);
+  border-color: rgba(255,255,255,0.1);
 }
-.light .hamburger-btn:hover {
-  background: var(--neutral-200);
+.dark .hamburger-btn span {
+  background: #ddd;
 }
-.light .hamburger-btn span {
-  background: var(--neutral-700);
+.dark .slide-menu {
+  background: #1a1a1a;
 }
-.light .slide-menu {
-  background: var(--neutral-50);
+.dark .slide-menu-header {
+  color: #666;
+  border-bottom-color: #333;
 }
-.light .slide-menu h3 {
-  color: var(--neutral-600);
-  border-bottom-color: var(--neutral-200);
+.dark .category-main {
+  color: #ddd;
 }
-.light .slide-menu a {
-  color: var(--neutral-700);
+.dark .category-main:hover {
+  background: #252525;
+  color: #fff;
 }
-.light .slide-menu a:hover {
-  background: var(--neutral-100);
+.dark .subcategory-list a {
+  color: #999;
+}
+.dark .subcategory-list a:hover {
+  background: #222;
+  color: #fff;
 }
 
-/* Hide on mobile - show hamburger in header instead */
+/* Mobile */
 @media (max-width: 768px) {
   .hamburger-btn {
-    left: 10px;
+    left: 15px;
     top: auto;
-    bottom: 20px;
+    bottom: 25px;
     transform: none;
+  }
+  .slide-menu {
+    width: 280px;
+    left: -300px;
   }
 }
 </style>
