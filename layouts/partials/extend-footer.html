@@ -1,3 +1,6 @@
+<!-- Hero Background (scroll fade) -->
+<div class="hero-background" id="heroBackground"></div>
+
 <!-- Hamburger Button -->
 <button class="hamburger-btn" id="menuToggle" aria-label="Toggle Menu">
   <span></span>
@@ -238,4 +241,23 @@ function toggleSubcategory(el) {
     el.classList.toggle('expanded');
   }
 }
+
+// Hero background fade on scroll
+(function() {
+  const hero = document.getElementById('heroBackground');
+  if (!hero) return;
+
+  const fadeStart = 0;
+  const fadeEnd = window.innerHeight * 0.8;
+
+  function updateOpacity() {
+    const scrollY = window.scrollY;
+    let opacity = 1 - (scrollY - fadeStart) / (fadeEnd - fadeStart);
+    opacity = Math.max(0, Math.min(1, opacity));
+    hero.style.opacity = opacity;
+  }
+
+  window.addEventListener('scroll', updateOpacity);
+  updateOpacity();
+})();
 </script>

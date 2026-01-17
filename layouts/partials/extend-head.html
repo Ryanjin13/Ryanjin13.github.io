@@ -54,54 +54,20 @@ a, a:hover, a:focus, a:active, a:visited {
   text-decoration: none !important;
 }
 
-/* Hero background image - fixed with top & bottom fade */
-.hero-image {
-  position: relative;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  height: 70vh;
-  background: url('/img/background.jpg') center center / cover no-repeat fixed;
-  margin-bottom: 0;
-}
-/* Top fadeout */
-.hero-image::before {
-  content: '';
-  position: absolute;
+/* Hero background - fixed, fades on scroll via JS */
+.hero-background {
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  height: 30%;
-  background: linear-gradient(to bottom, #ffffff, transparent);
-  pointer-events: none;
-  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  background: url('/img/background.jpg') center center / cover no-repeat;
+  z-index: -1;
+  transition: opacity 0.1s ease;
 }
-/* Bottom fadeout - longer and more gradual */
-.hero-image::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 80%;
-  background: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(255,255,255,0.1) 30%,
-    rgba(255,255,255,0.4) 50%,
-    rgba(255,255,255,0.7) 70%,
-    #ffffff 100%);
-  pointer-events: none;
-}
-/* Dark mode adjustments */
-.dark .hero-image::before {
-  background: linear-gradient(to bottom, #111111, transparent);
-}
-.dark .hero-image::after {
-  background: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(17,17,17,0.1) 30%,
-    rgba(17,17,17,0.4) 50%,
-    rgba(17,17,17,0.7) 70%,
-    #111111 100%);
+/* Spacer to push content down */
+.hero-spacer {
+  height: 70vh;
 }
 
 /* Homepage spacing - full page whitespace before recent */
