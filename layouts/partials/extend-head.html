@@ -95,8 +95,10 @@ main h1,
   margin-top: 10vh !important;
 }
 
-/* Article (single post) page styles */
-.single article h1 {
+/* Article (single post) page styles - NOT homepage */
+article h1.title,
+article header h1,
+body:not(.homepage) article h1 {
   font-family: 'Josefin Sans', sans-serif !important;
   font-size: 22px !important;
   font-weight: 400 !important;
@@ -111,21 +113,23 @@ main h1,
   margin-top: 10vh !important;
   margin-bottom: 75vh !important;
 }
-.single article,
-.single article p,
-.single article li,
-.single article span {
+article p,
+article li,
+article span,
+.prose p,
+.prose li {
   color: #333 !important;
 }
 /* Article meta (date) and content on white background */
-.single article .meta,
-.single article header > *:not(h1),
-.single .prose {
+article .meta,
+article header > *:not(h1),
+.prose,
+article > *:not(header) {
   background: #fff !important;
   position: relative;
   z-index: 1;
 }
-.single article .meta {
+article .meta {
   padding-top: 2rem !important;
 }
 
