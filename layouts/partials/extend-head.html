@@ -194,17 +194,23 @@ aside,
   margin-right: 0 !important;
 }
 
-/* TOC active item - bold highlight */
+/* TOC active item - bold highlight (smartTOC adds .active class) */
 #TableOfContents a.active,
-aside a.active,
-[class*="toc"] a.active,
-nav a.active {
+.toc a.active,
+.toc-right a.active,
+details a.active {
   font-weight: 700 !important;
   color: #000 !important;
+  background: rgba(0,0,0,0.05) !important;
+  border-radius: 3px !important;
+  padding: 2px 4px !important;
+  margin: -2px -4px !important;
 }
 .dark #TableOfContents a.active,
-.dark aside a.active {
+.dark .toc a.active,
+.dark .toc-right a.active {
   color: #fff !important;
+  background: rgba(255,255,255,0.1) !important;
 }
 
 /* KaTeX equations - tag fixed at right edge of container */

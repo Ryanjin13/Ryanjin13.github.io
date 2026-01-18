@@ -261,37 +261,5 @@ function toggleSubcategory(el) {
   updateOpacity();
 })();
 
-// TOC active section highlight
-(function() {
-  const tocLinks = document.querySelectorAll('#TableOfContents a, .toc a');
-  if (!tocLinks.length) return;
-
-  const headings = [];
-  tocLinks.forEach(link => {
-    const id = link.getAttribute('href')?.replace('#', '');
-    if (id) {
-      const heading = document.getElementById(id);
-      if (heading) headings.push({ id, element: heading, link });
-    }
-  });
-
-  function updateActive() {
-    let current = null;
-    const scrollPos = window.scrollY + 150;
-
-    headings.forEach(h => {
-      if (h.element.offsetTop <= scrollPos) {
-        current = h;
-      }
-    });
-
-    tocLinks.forEach(link => link.classList.remove('active'));
-    if (current) {
-      current.link.classList.add('active');
-    }
-  }
-
-  window.addEventListener('scroll', updateActive);
-  updateActive();
-})();
+// TOC active highlighting is handled by Blowfish's smartTOC feature
 </script>
