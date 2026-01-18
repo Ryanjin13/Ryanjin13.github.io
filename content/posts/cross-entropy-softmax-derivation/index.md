@@ -16,7 +16,7 @@ L=-\sum_i y_i \log(p_i) \tag{1}
 $$
 
 ## Softmax
-
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 $$
 p_i=\frac{e^{z_i}}{\sum_j e^{z_j}} \tag{2}
 $$
