@@ -129,6 +129,23 @@ article > *:not(header) {
   background: transparent !important;
 }
 
+/* KaTeX equation tags - move to right */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.katex-display > .katex {
+  white-space: normal;
+}
+.katex .tag {
+  position: absolute !important;
+  right: 0 !important;
+  left: auto !important;
+}
+.katex-display .katex-html {
+  padding-right: 3em !important;
+}
+
 /* Homepage spacing - full page whitespace before recent */
 .homepage-spacer {
   height: 100vh;
