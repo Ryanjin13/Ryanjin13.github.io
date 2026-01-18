@@ -146,6 +146,18 @@ nav.toc {
   margin-right: 0 !important;
 }
 
+/* TOC active item - bold highlight */
+#TableOfContents a.active,
+.toc a.active,
+nav.toc a.active {
+  font-weight: 700 !important;
+  color: #000 !important;
+}
+.dark #TableOfContents a.active,
+.dark .toc a.active {
+  color: #fff !important;
+}
+
 /* KaTeX equations - don't wrap, allow scroll if needed */
 .katex-display {
   overflow-x: auto !important;
