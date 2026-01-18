@@ -81,11 +81,9 @@ nav a[href="/"] {
   text-transform: uppercase !important;
 }
 
-/* Main page title - responsive, white, tall elegant */
-main h1,
-.homepage h1,
-article > h1:first-of-type,
-.prose h1:first-of-type {
+/* Homepage main title - big, white, elegant */
+body.homepage main h1,
+body.list main h1:first-of-type {
   font-family: 'Josefin Sans', sans-serif !important;
   font-size: 6.5vw !important;
   font-weight: 300 !important;
@@ -95,6 +93,34 @@ article > h1:first-of-type,
   text-shadow: 0 4px 40px rgba(0,0,0,0.3) !important;
   white-space: nowrap !important;
   margin-top: 10vh !important;
+}
+
+/* Article page title - normal size, black */
+article h1,
+.single h1,
+.prose h1 {
+  font-family: 'Josefin Sans', sans-serif !important;
+  font-size: 32px !important;
+  font-weight: 400 !important;
+  color: #222 !important;
+  letter-spacing: 1px !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+  margin-top: 0 !important;
+}
+
+/* Article page - top spacer for image */
+article,
+.single main,
+.prose {
+  padding-top: 60vh;
+}
+
+/* Article text - black on white */
+article, article p, article li, article span,
+.prose, .prose p, .prose li, .prose span {
+  color: #333 !important;
+  background: transparent;
 }
 
 /* Homepage spacing - full page whitespace before recent */
