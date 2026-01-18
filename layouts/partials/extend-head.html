@@ -96,25 +96,31 @@ main h1,
 }
 
 /* Article (single post) page styles */
-.single article {
-  padding-top: 70vh;
-}
 .single article h1 {
   font-family: 'Josefin Sans', sans-serif !important;
-  font-size: 28px !important;
+  font-size: 22px !important;
   font-weight: 400 !important;
-  color: #222 !important;
+  color: #fff !important;
   letter-spacing: 1px !important;
   text-transform: none !important;
-  text-shadow: none !important;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5) !important;
   white-space: normal !important;
-  margin-top: 0 !important;
+  margin-top: 10vh !important;
+  margin-bottom: 80vh !important;
 }
 .single article,
 .single article p,
 .single article li,
 .single article span {
   color: #333 !important;
+}
+/* Article meta (date, etc) and content on white */
+.single article .meta,
+.single article .prose,
+.single article > *:not(h1) {
+  background: #fff;
+  position: relative;
+  z-index: 1;
 }
 
 /* Homepage spacing - full page whitespace before recent */
