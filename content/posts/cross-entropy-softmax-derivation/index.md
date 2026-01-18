@@ -4,9 +4,10 @@ date: 2026-01-18
 description: "Cross Entropy Loss와 Softmax의 미분 유도 과정"
 categories: ["Artificial Intelligence"]
 tags: ["Deep Learning Basic"]
-math: true
 draft: false
 ---
+
+{{< katex >}}
 
 ## Cross Entropy Loss
 
@@ -52,13 +53,13 @@ $$
 p_i=\frac{e^{z_i}}{\sum_k e^{z_k}} \tag{8}
 $$
 
-### Case 1: $\frac{\partial p_i}{\partial z_i}$
+### Case 1: \(\frac{\partial p_i}{\partial z_i}\)
 
 $$
 \frac{\partial p_i}{\partial z_i}=\frac{\partial}{\partial z_i}\left[\frac{e^{z_i}}{\sum_k e^{z_k}}\right] \tag{9}
 $$
 
-fractional differentiation: $\frac{\partial}{\partial x} \left[\frac{f}{g}\right] = \frac{f'g-fg'}{g^2}$
+fractional differentiation: \(\frac{\partial}{\partial x} \left[\frac{f}{g}\right] = \frac{f'g-fg'}{g^2}\)
 
 $$
 \frac{\partial p_i}{\partial z_i} = \frac{\partial}{\partial z_i} \left(\frac{e^{z_i}}{S}\right) \tag{10}
@@ -84,7 +85,7 @@ $$
 = p_i(1-p_i) \tag{15}
 $$
 
-### Case 2: $\frac{\partial p_i}{\partial z_j}, i \neq j$
+### Case 2: \(\frac{\partial p_i}{\partial z_j}, i \neq j\)
 
 $$
 \frac{\partial p_i}{\partial z_j}=\frac{\partial}{\partial z_j}\left(\frac{e^{z_i}}{S}\right) \tag{16}
