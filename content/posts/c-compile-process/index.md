@@ -13,11 +13,59 @@ C 컴파일 과정을 여러 소스 파일, 오브젝트 파일, 정적 라이�
 
 ## 1. Example Files
 
-수학 유틸리티 라이브러리 구성:
+### math_utils.h
+```c
+#ifndef MATH_UTILS_H
+#define MATH_UTILS_H
 
-- `math_utils.h` - 함수 선언 헤더 (add, multiply, subtract)
-- `add.c`, `multiply.c`, `subtract.c` - 구현 파일
-- `main.c` - 라이브러리 함수를 사용하는 메인 프로그램
+int add(int a, int b);
+int multiply(int a, int b);
+int subtract(int a, int b);
+
+#endif
+```
+
+### add.c
+```c
+#include "math_utils.h"
+
+int add(int a, int b) {
+    return a + b;
+}
+```
+
+### multiply.c
+```c
+#include "math_utils.h"
+
+int multiply(int a, int b) {
+    return a * b;
+}
+```
+
+### subtract.c
+```c
+#include "math_utils.h"
+
+int subtract(int a, int b) {
+    return a - b;
+}
+```
+
+### main.c
+```c
+#include <stdio.h>
+#include "math_utils.h"
+
+int main() {
+    int x = 10, y = 5;
+
+    printf("Add: %d\n", add(x, y));
+    printf("Multiply: %d\n", multiply(x, y));
+
+    return 0;
+}
+```
 
 ## 2. Compilation to Object Files
 
@@ -45,19 +93,19 @@ nm main.o
 
 ## 4. Using `objdump` Tool
 
-`objdump` 주요 플래그:
+```bash
+objdump -r main.o    # 재배치 엔트리
+objdump -d main.o    # 디스어셈블
+objdump -h main.o    # 섹션 헤더
+objdump -t myprogram # 심볼 테이블
+```
 
 | 플래그 | 설명 |
 |--------|------|
 | `-d` | 실행 섹션 디스어셈블 (어셈블리 코드) |
 | `-r` | 재배치 엔트리 표시 (예: `R_X86_64_PLT32`) |
 | `-h` | 섹션 헤더 및 메모리 레이아웃 |
-
-```bash
-objdump -d add.o
-objdump -r main.o
-objdump -h main.o
-```
+| `-t` | 심볼 테이블 |
 
 ## 5. Creating Static Libraries
 
@@ -79,7 +127,13 @@ gcc main.o -L. -lmath -o myprogram
 
 ## 7. Optimization Levels
 
-GCC 최적화 플래그:
+```bash
+gcc -O0 main.c -o program_slow      # 최적화 없음
+gcc -O1 main.c -o program_basic     # 기본 최적화
+gcc -O2 main.c -o program_standard  # 권장 최적화
+gcc -O3 main.c -o program_fast      # 공격적 최적화
+gcc -Os main.c -o program_small     # 크기 최적화
+```
 
 | 플래그 | 설명 |
 |--------|------|
