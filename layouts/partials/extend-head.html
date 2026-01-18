@@ -129,21 +129,20 @@ article > *:not(header) {
   background: transparent !important;
 }
 
-/* KaTeX equation tags - move to right */
+/* KaTeX equation tags - right aligned like papers */
 .katex-display {
-  overflow-x: auto;
-  overflow-y: hidden;
+  position: relative !important;
+  width: 100% !important;
 }
-.katex-display > .katex {
-  white-space: normal;
-}
-.katex .tag {
+.katex-display .tag {
   position: absolute !important;
   right: 0 !important;
-  left: auto !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
 }
-.katex-display .katex-html {
-  padding-right: 3em !important;
+.katex-display > .katex > .katex-html > .tag {
+  position: absolute !important;
+  right: 0 !important;
 }
 
 /* Homepage spacing - full page whitespace before recent */
