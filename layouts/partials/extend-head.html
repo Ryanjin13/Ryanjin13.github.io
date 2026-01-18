@@ -129,8 +129,21 @@ article > *:not(header) {
   background: transparent !important;
 }
 
+/* Hide right TOC sidebar, let article use full width */
+aside,
+.toc,
+#TableOfContents,
+[class*="toc"],
+.right-sidebar {
+  display: none !important;
+}
+/* Article takes full grid width */
+main > article,
+article {
+  grid-column: 1 / -1 !important;
+  max-width: 100% !important;
+}
 /* Article content - centered layout */
-main article,
 article .prose,
 .prose {
   max-width: 1000px !important;
