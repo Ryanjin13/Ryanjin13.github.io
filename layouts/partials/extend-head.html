@@ -129,33 +129,48 @@ article > *:not(header) {
   background: transparent !important;
 }
 
-/* Article layout - consistent padding */
-.article-wrapper {
+/* Article layout - FORCE full width */
+.article-wrapper,
+article,
+main article,
+main > article {
   width: 100% !important;
+  max-width: 100% !important;
   padding: 0 4vw !important;
 }
 .article-header,
 .article-footer {
-  max-width: 1100px !important;
   width: 100% !important;
+  max-width: none !important;
 }
-.article-body {
+.article-body,
+section.flex,
+article section {
   display: flex !important;
   width: 100% !important;
+  max-width: none !important;
 }
-.article-content-wrapper {
+.article-content-wrapper,
+.min-w-0,
+div.min-w-0 {
   flex: 1 !important;
   min-width: 0 !important;
+  max-width: none !important;
   margin-right: 20px !important;
 }
-.article-content {
+.article-content,
+.prose,
+div.prose {
   width: 100% !important;
+  max-width: none !important;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
 }
 /* TOC wrapper - fixed width on right */
-.toc-wrapper {
+.toc-wrapper,
+div.toc {
   width: 220px !important;
+  min-width: 220px !important;
   flex-shrink: 0 !important;
   position: sticky !important;
   top: 100px !important;
