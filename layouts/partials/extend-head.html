@@ -90,16 +90,16 @@ nav a[href="/"] {
   text-transform: uppercase !important;
 }
 
-/* Homepage main title - big, white, elegant */
+/* Homepage main title - big, white, elegant, responsive */
 main h1,
 .homepage h1,
 main.homepage h1,
 body.homepage main h1 {
   font-family: 'Josefin Sans', sans-serif !important;
-  font-size: 9vw !important;
+  font-size: clamp(40px, 18vw, 200px) !important;
   font-weight: 300 !important;
   color: #ffffff !important;
-  letter-spacing: 1vw !important;
+  letter-spacing: clamp(4px, 2vw, 30px) !important;
   text-transform: uppercase !important;
   text-shadow: 0 4px 40px rgba(0,0,0,0.3) !important;
   white-space: nowrap !important;
