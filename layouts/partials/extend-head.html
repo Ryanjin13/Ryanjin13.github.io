@@ -129,20 +129,27 @@ article > *:not(header) {
   background: transparent !important;
 }
 
-/* Article content width - much wider */
+/* Article content width - force wider */
 article,
 .prose,
 article .prose,
 main > article,
+main article,
+div.min-w-0,
+div.max-w-prose,
 .max-w-prose,
+[class*="max-w-"],
+[class*="prose"],
 .container,
-main .container {
-  max-width: 1200px !important;
-  width: 95% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  padding-left: 2rem !important;
-  padding-right: 2rem !important;
+main .container,
+main > div,
+article > div {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+main, article {
+  padding-left: 5vw !important;
+  padding-right: 5vw !important;
 }
 
 /* KaTeX equation tags - right aligned like papers */
