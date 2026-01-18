@@ -129,32 +129,23 @@ article > *:not(header) {
   background: transparent !important;
 }
 
-/* Article content - FORCE remove all width limits */
-article,
-article .prose,
-.prose,
-article > div,
-.min-w-0,
-main > div,
-main > article,
-[class*="container"],
-[class*="max-w"],
-.mx-auto,
-article header,
-article .meta,
-article h1,
-.max-w-prose,
-.max-w-fit,
-.max-w-full,
+/* Article layout - consistent padding */
+.article-wrapper {
+  width: 100% !important;
+  padding: 0 4vw !important;
+}
+.article-header,
+.article-body,
+.article-content-wrapper,
 .article-content,
-#single_header,
-section.flex {
+.article-footer {
   max-width: none !important;
   width: 100% !important;
-  padding-left: 4vw !important;
-  padding-right: 1vw !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+}
+/* TOC wrapper - fixed width on right */
+.toc-wrapper {
+  width: 220px !important;
+  flex-shrink: 0 !important;
 }
 /* TOC - closer to right edge */
 aside,
