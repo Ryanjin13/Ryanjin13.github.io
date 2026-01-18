@@ -1,7 +1,7 @@
 ---
 title: "DVS File Type for SNN Vision Input"
 date: 2025-07-20
-description: "Dynamic Vision Sensor 이벤트 데이터 파일 형식 비교"
+description: "Comparison of Dynamic Vision Sensor event data file formats"
 categories: ["Spiking Neural Network"]
 tags: ["DVS", "AEDAT", "HDF5", "Neuromorphic Vision"]
 draft: false
@@ -9,13 +9,13 @@ draft: false
 
 ## Overview
 
-Dynamic Vision Sensor (DVS) 이벤트 데이터 저장에 사용되는 4가지 파일 형식을 설명합니다. SNN (Spiking Neural Network) 비전 입력에 필수적인 내용입니다.
+This post explains four different file formats used for storing Dynamic Vision Sensor (DVS) event data, which is essential for Spiking Neural Networks (SNN).
 
 ## Four Main File Formats
 
 ### 1. Text Format (.txt)
 
-사람이 읽을 수 있는 형식. 각 라인: `timestamp x y polarity`
+Human-readable format. Each line: `timestamp x y polarity`
 
 ```
 1000 120 80 1
@@ -23,15 +23,15 @@ Dynamic Vision Sensor (DVS) 이벤트 데이터 저장에 사용되는 4가지 �
 1001 122 81 1
 ```
 
-동일한 timestamp에 여러 이벤트가 발생할 수 있어 동시 이벤트 표현이 가능합니다.
+Multiple events can occur at the same timestamp, enabling simultaneous event representation.
 
 ### 2. HDF5 Format (.h5)
 
-**개발:** National Center for Supercomputing Applications (NCSA)
+**Developed by:** National Center for Supercomputing Applications (NCSA)
 
-기후 모델링, 천문학 등 과학 분야에서 널리 사용됩니다.
+Widely used in scientific fields including climate modeling and astronomy.
 
-**계층 구조:**
+**Hierarchical Structure:**
 ```
 /events/
     ├── x (dataset)
@@ -45,29 +45,29 @@ Dynamic Vision Sensor (DVS) 이벤트 데이터 저장에 사용되는 4가지 �
     └── statistics
 ```
 
-Python `h5py` 라이브러리로 효율적인 timestamp 기반 필터링 가능.
+Python `h5py` library enables efficient timestamp-based filtering.
 
 ### 3. AEDAT2 Format (.aedat)
 
 **AEDAT = Address Event Data format**
 
-Neuromorphic engineering 커뮤니티에서 개발한 이벤트 기반 비전 센서 포맷.
+Developed by the neuromorphic engineering community for event-based vision sensors.
 
-**바이너리 구조:** 이벤트당 8 bytes
+**Binary Structure:** 8 bytes per event
 - 4 bytes: timestamp
-- 4 bytes: address (x, y, polarity 인코딩)
+- 4 bytes: address (x, y, polarity encoding)
 
 ### 4. AEDAT4 Format (.aedat)
 
-최신 패킷 기반 포맷. 압축된 이벤트 패킷으로 효율적인 스트리밍 지원.
+Modern packet-based format with compressed event packets for efficient streaming.
 
 ## File Size Comparison
 
-| 형식 | 크기 | 특징 |
-|------|------|------|
+| Format | Size | Characteristics |
+|--------|------|-----------------|
 | events.txt | 1.2 KB | Human-readable |
 | events.h5 | 0.8 KB | Binary structured |
 | events.aedat2 | 0.3 KB | Compact binary |
 | events.aedat4 | 0.2 KB | Compressed packets |
 
-AEDAT4가 가장 효율적인 저장 공간을 제공합니다.
+AEDAT4 provides the most efficient storage space.

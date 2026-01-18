@@ -1,7 +1,7 @@
 ---
 title: "AlexNet Architecture (2012)"
 date: 2025-05-20
-description: "AlexNet의 6가지 핵심 혁신"
+description: "6 key innovations of AlexNet"
 categories: ["2D Vision"]
 tags: ["CNN", "Object Detection", "Deep Learning History"]
 draft: false
@@ -9,57 +9,57 @@ draft: false
 
 ## AlexNet (2012)
 
-2012년 ImageNet 대회에서 우승하며 딥러닝 시대를 연 AlexNet의 핵심 혁신을 정리합니다.
+AlexNet won the ImageNet competition in 2012 and ushered in the deep learning era. Here are its key innovations.
 
-## 6가지 핵심 혁신
+## 6 Key Innovations
 
 ### 1. Deep Architecture
 
 ```
 5 Convolutional Layers + 3 Fully Connected Layers
-총 60 million 파라미터
+Total: 60 million parameters
 ```
 
-당시로서는 획기적으로 깊은 네트워크 구조.
+A groundbreaking network depth for its time.
 
 ### 2. ReLU Activation
 
-**최초로 ReLU를 주요 CNN에 적용** (기존: tanh/sigmoid)
+**First major CNN to use ReLU** (replacing tanh/sigmoid)
 
-| Activation | 문제점 |
-|------------|--------|
+| Activation | Problem |
+|------------|---------|
 | Sigmoid/Tanh | Vanishing gradient |
-| **ReLU** | 빠른 학습, gradient 유지 |
+| **ReLU** | Fast training, gradient preservation |
 
 ### 3. Dropout Regularization
 
 ```
-FC layers에 50% Dropout 적용
+50% Dropout applied to FC layers
 ```
 
-과적합 방지를 위한 당시 혁신적인 정규화 기법.
+A novel regularization technique for preventing overfitting.
 
 ### 4. GPU Training
 
 ```
-2x GTX 580 GPU로 병렬 학습
+Trained on 2x GTX 580 GPUs in parallel
 ```
 
-대규모 네트워크 학습을 가능하게 한 하드웨어 활용.
+Hardware acceleration enabling large-scale network training.
 
 ### 5. Data Augmentation
 
-- Image translations (이동)
-- Horizontal reflections (좌우 반전)
-- PCA color augmentation (색상 변환)
+- Image translations
+- Horizontal reflections
+- PCA color augmentation
 
-학습 데이터를 인위적으로 확장하여 일반화 성능 향상.
+Artificially expanding training data for better generalization.
 
 ### 6. Local Response Normalization (LRN)
 
-ReLU 이후 적용된 정규화 기법.
+Normalization technique applied after ReLU.
 
-> 이후 **Batch Normalization**으로 대체됨.
+> Later replaced by **Batch Normalization**.
 
 ## Architecture Summary
 

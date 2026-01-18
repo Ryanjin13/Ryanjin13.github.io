@@ -1,7 +1,7 @@
 ---
 title: "Cross-Entropy and MSE Principles"
 date: 2025-03-30
-description: "Cross-Entropy와 MSE 손실 함수의 기하학적 원리 비교"
+description: "Geometric principles comparison between Cross-Entropy and MSE loss functions"
 categories: ["Artificial Intelligence"]
 tags: ["Deep Learning Basic"]
 draft: false
@@ -27,36 +27,36 @@ $$
 
 ### Geometric Foundation
 
-- **MSE**: Euclidean distance (L2 norm) 기반
-- **Cross-Entropy**: "Information Geometry" 기반
+- **MSE**: Based on Euclidean distance (L2 norm)
+- **Cross-Entropy**: Based on "Information Geometry"
 
 ### Computational Approach
 
 | MSE | Cross-Entropy |
 |-----|---------------|
-| 평면(2D plane) 위에서 거리 계산 | 곡면(probability manifold) 위에서 방향성 계산 |
+| Distance calculation on flat 2D plane | Directional calculation on curved probability manifold |
 | Additive error | Multiplicative probability |
 
 ### One-Hot Encoding Impact
 
-One-hot encoding 상황에서:
+With one-hot encoding:
 
-- **MSE**: 모든 클래스에 대해 에러 계산 (불필요한 연산 포함)
+- **MSE**: Computes errors for all classes (including unnecessary calculations)
 $$
 (0 - q_{incorrect})^2
 $$
 
-- **Cross-Entropy**: 정답 클래스의 확률만 계산
+- **Cross-Entropy**: Only computes probability of correct class
 $$
 -\log(q_{correct})
 $$
 
 ### Convergence Behavior
 
-학습이 진행되어 정답 확률이 1에 가까워지면:
+As training progresses and correct probability approaches 1:
 
 $$
 \lim_{q_{correct} \to 1} -\log(q_{correct}) = -\log(1) = 0
 $$
 
-Cross-Entropy 손실이 자연스럽게 0으로 수렴합니다.
+Cross-Entropy loss naturally converges to 0.

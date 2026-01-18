@@ -1,7 +1,7 @@
 ---
 title: "Cross Entropy & Softmax Derivation"
 date: 2026-01-18
-description: "Cross Entropy Loss와 Softmax의 미분 유도 과정"
+description: "Derivation of Cross Entropy Loss and Softmax gradients"
 categories: ["Artificial Intelligence"]
 tags: ["Deep Learning Basic"]
 draft: false
@@ -16,7 +16,7 @@ L=-\sum_i y_i \log(p_i) \tag{1}
 $$
 
 ## Softmax
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
 $$
 p_i=\frac{e^{z_i}}{\sum_j e^{z_j}} \tag{2}
 $$
@@ -59,7 +59,7 @@ $$
 \frac{\partial p_i}{\partial z_i}=\frac{\partial}{\partial z_i}\left[\frac{e^{z_i}}{\sum_k e^{z_k}}\right] \tag{9}
 $$
 
-fractional differentiation: \(\frac{\partial}{\partial x} \left[\frac{f}{g}\right] = \frac{f'g-fg'}{g^2}\)
+Quotient rule: \(\frac{\partial}{\partial x} \left[\frac{f}{g}\right] = \frac{f'g-fg'}{g^2}\)
 
 $$
 \frac{\partial p_i}{\partial z_i} = \frac{\partial}{\partial z_i} \left(\frac{e^{z_i}}{S}\right) \tag{10}
