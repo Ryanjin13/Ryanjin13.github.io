@@ -29,8 +29,8 @@
       {{ end }}
     </header>
 
-    {{/* Body - removed max-w constraints */}}
-    <section class="flex flex-col mt-0 prose dark:prose-invert lg:flex-row article-body">
+    {{/* Body - removed prose from section, moved to content only */}}
+    <section class="flex flex-col mt-0 lg:flex-row article-body">
       {{ $enableToc := site.Params.article.showTableOfContents | default false }}
       {{ $enableToc = .Params.showTableOfContents | default $enableToc }}
       {{ $showToc := and $enableToc (in .TableOfContents "<ul") }}
@@ -46,7 +46,7 @@
 
       <div class="min-w-0 min-h-0 article-content-wrapper">
         {{ partial "series/series.html" . }}
-        <div class="article-content mb-20">
+        <div class="article-content prose dark:prose-invert mb-20">
           {{ .Content }}
           {{ $defaultReplyByEmail := site.Params.replyByEmail }}
           {{ $replyByEmail := default $defaultReplyByEmail .Params.replyByEmail }}

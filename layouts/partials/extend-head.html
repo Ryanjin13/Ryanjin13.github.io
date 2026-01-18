@@ -159,12 +159,18 @@ div.min-w-0 {
   margin-right: 20px !important;
 }
 .article-content,
+.article-content.prose,
 .prose,
 div.prose {
   width: 100% !important;
   max-width: none !important;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
+}
+/* Override Tailwind prose max-width */
+.prose {
+  --tw-prose-body: none !important;
+  max-width: none !important;
 }
 /* TOC wrapper - fixed width on right */
 .toc-wrapper,
