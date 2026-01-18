@@ -106,7 +106,7 @@ main h1,
   text-shadow: 0 2px 10px rgba(0,0,0,0.5) !important;
   white-space: normal !important;
   margin-top: 10vh !important;
-  margin-bottom: 80vh !important;
+  padding-bottom: 70vh !important;
 }
 .single article,
 .single article p,
@@ -114,13 +114,12 @@ main h1,
 .single article span {
   color: #333 !important;
 }
-/* Article meta (date, etc) and content on white */
-.single article .meta,
-.single article .prose,
-.single article > *:not(h1) {
-  background: #fff;
-  position: relative;
-  z-index: 1;
+/* Article content wrapper on white background */
+.single .prose,
+.single article .article-content {
+  background: #fff !important;
+  padding-top: 3rem !important;
+  margin-top: 0 !important;
 }
 
 /* Homepage spacing - full page whitespace before recent */
