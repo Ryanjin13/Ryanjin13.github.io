@@ -129,6 +129,18 @@ article > *:not(header) {
   background: transparent !important;
 }
 
+/* Article content width - wider */
+article,
+.prose,
+article .prose,
+main > article,
+.max-w-prose {
+  max-width: 900px !important;
+  width: 90% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 /* KaTeX equation tags - right aligned like papers */
 .katex-display {
   position: relative !important;
