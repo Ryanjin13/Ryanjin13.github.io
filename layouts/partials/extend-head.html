@@ -135,11 +135,18 @@ article > *:not(header) {
   padding: 0 4vw !important;
 }
 .article-header,
-.article-body,
-.article-content-wrapper,
 .article-footer {
-  max-width: none !important;
+  max-width: 1100px !important;
   width: 100% !important;
+}
+.article-body {
+  display: flex !important;
+  width: 100% !important;
+}
+.article-content-wrapper {
+  flex: 1 !important;
+  max-width: calc(100% - 240px) !important;
+  margin-right: 20px !important;
 }
 .article-content {
   max-width: 1100px !important;
@@ -149,6 +156,9 @@ article > *:not(header) {
 .toc-wrapper {
   width: 220px !important;
   flex-shrink: 0 !important;
+  position: sticky !important;
+  top: 100px !important;
+  align-self: flex-start !important;
 }
 /* TOC - closer to right edge */
 aside,
@@ -173,11 +183,19 @@ nav a.active {
   color: #fff !important;
 }
 
-/* KaTeX equations - don't wrap, allow scroll if needed */
+/* KaTeX equations - tag on right edge */
 .katex-display {
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  max-width: 100% !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+.katex-display > .katex {
+  flex: 1 !important;
+}
+.katex-display .tag {
+  margin-left: auto !important;
+  padding-left: 2em !important;
 }
 .katex {
   white-space: nowrap !important;
