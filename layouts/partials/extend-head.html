@@ -100,12 +100,12 @@ article h1.title,
 article header h1,
 body:not(.homepage) article h1 {
   font-family: 'Josefin Sans', sans-serif !important;
-  font-size: 22px !important;
+  font-size: 3.5vw !important;
   font-weight: 400 !important;
   color: #fff !important;
-  letter-spacing: 1px !important;
+  letter-spacing: 2px !important;
   text-transform: none !important;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5) !important;
+  text-shadow: 0 2px 15px rgba(0,0,0,0.5) !important;
   white-space: normal !important;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
@@ -113,24 +113,20 @@ body:not(.homepage) article h1 {
   margin-top: 10vh !important;
   margin-bottom: 75vh !important;
 }
+/* Article content - transparent background, dark text */
 article p,
 article li,
 article span,
 .prose p,
-.prose li {
+.prose li,
+.prose {
   color: #333 !important;
+  background: transparent !important;
 }
-/* Article meta (date) and content on white background */
 article .meta,
 article header > *:not(h1),
-.prose,
 article > *:not(header) {
-  background: #fff !important;
-  position: relative;
-  z-index: 1;
-}
-article .meta {
-  padding-top: 2rem !important;
+  background: transparent !important;
 }
 
 /* Homepage spacing - full page whitespace before recent */
