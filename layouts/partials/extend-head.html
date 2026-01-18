@@ -129,27 +129,22 @@ article > *:not(header) {
   background: transparent !important;
 }
 
-/* Hide right TOC sidebar, let article use full width */
-aside,
-.toc,
-#TableOfContents,
-[class*="toc"],
-.right-sidebar {
-  display: none !important;
+/* Article content - wider layout */
+article .prose,
+.prose,
+article > div,
+.min-w-0 {
+  max-width: 100% !important;
+  width: 100% !important;
 }
-/* Article takes full grid width */
-main > article,
-article {
-  grid-column: 1 / -1 !important;
+/* KaTeX equations - don't wrap, allow scroll if needed */
+.katex-display {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
   max-width: 100% !important;
 }
-/* Article content - centered layout */
-article .prose,
-.prose {
-  max-width: 1000px !important;
-  width: 90% !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+.katex {
+  white-space: nowrap !important;
 }
 
 /* KaTeX equation tags - right aligned like papers */
