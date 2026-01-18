@@ -129,38 +129,25 @@ article > *:not(header) {
   background: transparent !important;
 }
 
-/* Article content - wider layout, leave space for TOC */
+/* Article content - full width */
 article .prose,
 .prose,
 article > div,
 .min-w-0 {
-  max-width: calc(100% - 250px) !important;
-  width: calc(100% - 250px) !important;
-  margin-right: 250px !important;
+  max-width: 100% !important;
+  width: 100% !important;
 }
-/* TOC position - fixed to right edge */
-aside,
-.toc-container,
-#TableOfContents,
-[class*="toc"] {
-  position: fixed !important;
-  right: 20px !important;
-  top: 100px !important;
-  max-width: 200px !important;
-}
-
 /* TOC active item - bold highlight */
 #TableOfContents a.active,
 aside a.active,
-[class*="toc"] a.active {
+[class*="toc"] a.active,
+nav a.active {
   font-weight: 700 !important;
   color: #000 !important;
-  background: rgba(0,0,0,0.05) !important;
 }
 .dark #TableOfContents a.active,
 .dark aside a.active {
   color: #fff !important;
-  background: rgba(255,255,255,0.1) !important;
 }
 
 /* KaTeX equations - don't wrap, allow scroll if needed */
