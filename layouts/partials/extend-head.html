@@ -151,13 +151,17 @@ main > div > section {
   margin-top: 20px;
 }
 
-/* 글 목록 간격 줄이기 */
+/* 글 목록 간격 줄이기 (카테고리/태그 페이지 + 메인 페이지 recent) */
 main section.space-y-10 > *,
-main .space-y-10 > * {
+main .space-y-10 > *,
+.space-y-10 > *,
+section.space-y-10 > * {
   margin-top: 16px !important;
 }
 main section.space-y-10 > *:first-child,
-main .space-y-10 > *:first-child {
+main .space-y-10 > *:first-child,
+.space-y-10 > *:first-child,
+section.space-y-10 > *:first-child {
   margin-top: 0 !important;
 }
 .dark main > section,
