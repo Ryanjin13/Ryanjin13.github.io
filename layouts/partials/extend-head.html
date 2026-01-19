@@ -220,6 +220,41 @@ article > *:not(header) {
   background: transparent !important;
 }
 
+/* Article metadata (date, words, reading time, tags) - dark text for visibility */
+article header .text-xs,
+article header .text-sm,
+article header .mt-1,
+article header .flex,
+article header time,
+article header a,
+article header span:not(.toggle),
+article .article-meta,
+article .meta,
+.single article header div,
+.single article header p {
+  color: #555 !important;
+}
+article header a:hover {
+  color: #000 !important;
+}
+/* Dark mode article metadata */
+.dark article header .text-xs,
+.dark article header .text-sm,
+.dark article header .mt-1,
+.dark article header .flex,
+.dark article header time,
+.dark article header a,
+.dark article header span:not(.toggle),
+.dark article .article-meta,
+.dark article .meta,
+.dark .single article header div,
+.dark .single article header p {
+  color: #bbb !important;
+}
+.dark article header a:hover {
+  color: #fff !important;
+}
+
 /* Article layout - FORCE full width, minimal padding */
 .article-wrapper,
 article,
