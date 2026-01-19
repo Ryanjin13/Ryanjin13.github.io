@@ -164,6 +164,20 @@ main .space-y-10 > *:first-child,
 section.space-y-10 > *:first-child {
   margin-top: 0 !important;
 }
+
+/* 글 카드 내부 패딩 줄이기 */
+article.border,
+.grid article,
+main .grid > a,
+main .grid > article,
+main .grid > div {
+  padding-top: 16px !important;
+}
+article.border > div:first-child,
+.grid article > div:first-child {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
 .dark main > section,
 .dark main section.space-y-10,
 .dark main section.w-full,
