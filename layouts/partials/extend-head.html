@@ -150,6 +150,16 @@ main > div > section {
   border-radius: 12px;
   margin-top: 20px;
 }
+
+/* 글 목록 간격 줄이기 */
+main section.space-y-10 > *,
+main .space-y-10 > * {
+  margin-top: 16px !important;
+}
+main section.space-y-10 > *:first-child,
+main .space-y-10 > *:first-child {
+  margin-top: 0 !important;
+}
 .dark main > section,
 .dark main section.space-y-10,
 .dark main section.w-full,
