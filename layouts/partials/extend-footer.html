@@ -278,18 +278,33 @@ function toggleSubcategory(el) {
       section.style.borderRadius = progress > 0.1 ? '12px' : '0';
       section.style.padding = progress > 0.1 ? '30px' : '10px';
 
-      // Text color transitions
-      const links = section.querySelectorAll('a, span, p, h2, h3');
-      links.forEach(function(el) {
+      // Text color transitions (including date/meta text)
+      const textElements = section.querySelectorAll('a, span, p, h2, h3, div, time');
+      textElements.forEach(function(el) {
+        // Skip if it's a container with children (only style leaf text nodes)
+        if (el.querySelector('a, span, p, h2, h3')) return;
+
         if (isDark) {
           // Dark mode: white text throughout
           el.style.color = '#eee';
         } else {
           // Light mode: white -> dark as we scroll
-          const r = Math.round(255 - (255 - 51) * progress);
-          const g = Math.round(255 - (255 - 51) * progress);
-          const b = Math.round(255 - (255 - 51) * progress);
-          el.style.color = `rgb(${r}, ${g}, ${b})`;
+          // Check if it's a neutral/muted text (date, meta info)
+          const isNeutral = el.className && (
+            el.className.includes('neutral') ||
+            el.className.includes('text-sm') ||
+            el.className.includes('meta')
+          );
+
+          if (isNeutral) {
+            // Muted text: white -> gray
+            const gray = Math.round(255 - (255 - 120) * progress);
+            el.style.color = `rgb(${gray}, ${gray}, ${gray})`;
+          } else {
+            // Regular text: white -> dark
+            const val = Math.round(255 - (255 - 51) * progress);
+            el.style.color = `rgb(${val}, ${val}, ${val})`;
+          }
         }
       });
     });
