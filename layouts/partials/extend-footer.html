@@ -242,83 +242,26 @@ function toggleSubcategory(el) {
   }
 }
 
-// Hero background fade + content style transition on scroll
+// Hero background fade on scroll (only fades background, no text color changes)
 (function() {
   const hero = document.getElementById('heroBackground');
-  const contentSections = document.querySelectorAll('main > section, main section.space-y-10, main section.w-full, main .grid');
 
   const fadeStart = 0;
   const fadeEnd = window.innerHeight * 0.6;
 
-  function updateStyles() {
+  function updateHeroOpacity() {
     const scrollY = window.scrollY;
-
-    // Calculate progress (0 = top, 1 = scrolled past fadeEnd)
     let progress = (scrollY - fadeStart) / (fadeEnd - fadeStart);
     progress = Math.max(0, Math.min(1, progress));
 
-    // Hero background fades out
     if (hero) {
       hero.style.opacity = 1 - progress;
     }
-
-    // Content sections transition
-    contentSections.forEach(function(section) {
-      // Background: transparent -> white (or dark in dark mode)
-      const bgOpacity = progress * 0.95;
-      const isDark = document.documentElement.classList.contains('dark');
-
-      if (isDark) {
-        section.style.background = `rgba(30, 30, 30, ${bgOpacity})`;
-      } else {
-        section.style.background = `rgba(255, 255, 255, ${bgOpacity})`;
-      }
-
-      // Border radius appears as background becomes visible
-      section.style.borderRadius = progress > 0.1 ? '12px' : '0';
-      section.style.padding = progress > 0.1 ? '30px' : '10px';
-
-      // Text color transitions (including date/meta text)
-      const textElements = section.querySelectorAll('a, span, p, h2, h3, div, time');
-      textElements.forEach(function(el) {
-        // Skip if it's a container with children (only style leaf text nodes)
-        if (el.querySelector('a, span, p, h2, h3')) return;
-
-        if (isDark) {
-          // Dark mode: white text throughout
-          el.style.color = '#eee';
-        } else {
-          // Light mode: white -> dark as we scroll
-          // Check if it's a neutral/muted text (date, meta info)
-          const isNeutral = el.className && (
-            el.className.includes('neutral') ||
-            el.className.includes('text-sm') ||
-            el.className.includes('meta')
-          );
-
-          if (isNeutral) {
-            // Muted text: white -> gray
-            const gray = Math.round(255 - (255 - 120) * progress);
-            el.style.color = `rgb(${gray}, ${gray}, ${gray})`;
-          } else {
-            // Regular text: white -> dark
-            const val = Math.round(255 - (255 - 51) * progress);
-            el.style.color = `rgb(${val}, ${val}, ${val})`;
-          }
-        }
-      });
-    });
   }
 
-  window.addEventListener('scroll', updateStyles);
-  window.addEventListener('resize', updateStyles);
-
-  // Initial call
-  updateStyles();
-
-  // Also update on theme change
-  const observer = new MutationObserver(updateStyles);
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  window.addEventListener('scroll', updateHeroOpacity);
+  window.addEventListener('resize', updateHeroOpacity);
+  updateHeroOpacity();
 })();
 
 // TOC active highlighting is handled by Blowfish's smartTOC feature
