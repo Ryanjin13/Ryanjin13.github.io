@@ -114,22 +114,29 @@ header h1.font-extrabold {
   color: #ffffff !important;
   letter-spacing: clamp(2px, 1vw, 10px) !important;
   text-transform: uppercase !important;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.4) !important;
+  text-shadow: 0 4px 30px rgba(0,0,0,0.5) !important;
   white-space: normal !important;
 }
 
-/* 모든 리스트/카테고리/태그 페이지 - 헤더 흰색 텍스트 */
+/* 모든 리스트/카테고리/태그 페이지 - 헤더 상단 여백 및 흰색 텍스트 */
+main > header,
+main header {
+  padding-top: 80px !important;
+  margin-bottom: 20px !important;
+}
 main > header,
 main > header *,
 main header h1,
 main header .mt-1,
-main header .text-base {
+main header .text-base,
+main header p,
+main header span {
   color: #ffffff !important;
 }
 main > header .text-neutral-500,
 main > header .text-neutral-400,
 main header [class*="neutral"] {
-  color: rgba(255,255,255,0.7) !important;
+  color: rgba(255,255,255,0.8) !important;
 }
 
 /* 모든 리스트/카테고리 페이지 본문 - 정적 스타일 */
