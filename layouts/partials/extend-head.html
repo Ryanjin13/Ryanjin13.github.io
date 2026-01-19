@@ -91,19 +91,28 @@ nav a[href="/"] {
 }
 
 /* Homepage main title - big, white, elegant, responsive */
-main h1,
-.homepage h1,
-main.homepage h1,
-body.homepage main h1 {
+/* 홈페이지 전용: header 안의 h1은 제외 */
+article.prose h1.mb-2.font-extrabold:not(header h1),
+.prose.dark\:prose-invert.max-w-full > div > div > div > div > h1 {
   font-family: 'Josefin Sans', sans-serif !important;
-  font-size: clamp(80px, 36vw, 400px) !important;
+  font-size: clamp(80px, 20vw, 200px) !important;
   font-weight: 300 !important;
   color: #ffffff !important;
-  letter-spacing: clamp(8px, 4vw, 60px) !important;
+  letter-spacing: clamp(8px, 2vw, 30px) !important;
   text-transform: uppercase !important;
   text-shadow: 0 4px 40px rgba(0,0,0,0.3) !important;
   white-space: nowrap !important;
   margin-top: 10vh !important;
+}
+
+/* 카테고리/리스트 페이지 제목 - 원래 크기 유지 */
+header h1,
+header h1.text-4xl {
+  font-size: 2.25rem !important;
+  font-family: 'Inter', sans-serif !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  white-space: normal !important;
 }
 
 /* Article (single post) page styles - NOT homepage */

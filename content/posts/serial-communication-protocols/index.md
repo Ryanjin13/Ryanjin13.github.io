@@ -1,142 +1,214 @@
 ---
-title: "Serial Communication Protocols"
-date: 2024-07-20
-description: "Overview of major serial communication standards"
+title: "Major Serial Communication Protocols"
+date: 2024-07-16
+description: "Overview of essential serial communication protocols from RS-232 to CAN"
 categories: ["Computer Science"]
-tags: ["Serial Communication", "I2C", "SPI", "UART", "CAN"]
+tags: ["Serial Communication", "Protocols", "I2C", "SPI", "CAN", "USB"]
 draft: false
 ---
 
+{{< katex >}}
+
 ## Overview
 
-Serial communication protocols enable data transfer between devices using sequential bit transmission. Each protocol addresses specific bandwidth, distance, and reliability requirements.
+Serial communication protocols are fundamental to modern electronics, enabling data transfer between devices. This guide covers eight major protocols, their characteristics, and applications.
 
 ## Protocol Comparison
 
-| Protocol | Year | Speed | Distance | Wires | Use Case |
-|----------|------|-------|----------|-------|----------|
-| RS-232 | 1960s | 115.2 kbps | 15m | 3-9 | PC/Modem |
-| RS-485 | 1983 | 10 Mbps | 1200m | 2 | Industrial |
-| I2C | 1982 | 3.4 Mbps | Short | 2 | IC-to-IC |
-| SPI | 1980s | ~50 MHz | Short | 4 | High-speed IC |
-| UART | 1960s | 115.2 kbps | Short | 2 | Debug/Serial |
-| USB | 1996 | 40 Gbps | 5m | 4+ | Peripherals |
-| CAN | 1983 | 1 Mbps | 40m | 2 | Automotive |
-| FireWire | 1995 | 800 Mbps | 4.5m | 6 | A/V |
+| Protocol | Year | Speed | Distance | Wires |
+|----------|------|-------|----------|-------|
+| RS-232 | 1960s | 115.2 kbps | 15m | 3-9 |
+| RS-485 | 1983 | 10 Mbps | 1200m | 2 (diff) |
+| I2C | 1982 | 3.4 Mbps | On-chip | 2 |
+| SPI | 1980s | ~50 MHz | On-board | 4+ |
+| UART | 1960s | 115.2 kbps | varies | 2 |
+| USB | 1996 | 40 Gbps | 5m | 4 |
+| FireWire | 1995 | 800 Mbps | 4.5m | 6 |
+| CAN | 1983 | 1 Mbps | 40m | 2 |
 
-## RS-232
+## RS-232 (1960s)
 
-**Purpose:** Computer terminal and modem communication
+### Purpose
+Developed for computer-terminal and modem communication.
 
-```
-TX ────────── RX
-RX ────────── TX
-GND ───────── GND
-```
+### Characteristics
 
-- Point-to-point only
-- Voltage: ±15V
-- Speed: up to 115.2 kbps
-- Distance: ~15 meters
+- Maximum speed: 115.2 kbps
+- Maximum distance: 15 meters
+- Voltage levels: plus/minus 3V to 15V
+- Point-to-point connection
 
-## RS-485
+### Signal Pins
 
-**Purpose:** Multi-device industrial networks
+| Pin | Signal | Direction |
+|-----|--------|-----------|
+| TxD | Transmit Data | DTE to DCE |
+| RxD | Receive Data | DCE to DTE |
+| GND | Ground | - |
+| RTS | Request to Send | DTE to DCE |
+| CTS | Clear to Send | DCE to DTE |
 
-```
-Device 1 ──┬── Device 2 ──┬── Device 3
-           │              │
-        A+ │           A+ │
-        B- │           B- │
-```
+## RS-485 (1983)
 
-- Differential signaling
-- Up to 32 devices
-- Speed: 10 Mbps max
-- Distance: ~1200 meters
+### Purpose
+Long-distance, multi-device industrial communication.
 
-## I2C (Inter-Integrated Circuit)
+### Specifications
+- Maximum speed: 10 Mbps
+- Maximum distance: ~1200 meters
+- Differential signaling for noise immunity
+- Multi-drop topology (up to 32 devices)
 
-**Purpose:** Short-distance IC communication
+### Voltage Levels
 
-```
-Master ──── SDA ──── Slave 1
-       ──── SCL ──── Slave 2
-                     Slave 3...
-```
+$$
+V_{differential} = V_A - V_B
+$$
 
-- 2 wires: SDA (data), SCL (clock)
-- Up to 128 device addresses
-- Speeds: 100 kbps / 400 kbps / 3.4 Mbps
-- Multi-master capable
+| Logic | Voltage |
+|-------|---------|
+| 1 | V_A - V_B > +200mV |
+| 0 | V_A - V_B < -200mV |
 
-## SPI (Serial Peripheral Interface)
+## I2C (1982)
 
-**Purpose:** High-speed full-duplex communication
+### Purpose
+Inter-IC communication developed by Philips for simple on-chip connectivity.
 
-```
-Master          Slave
- MOSI ─────────→ MOSI
- MISO ←───────── MISO
- SCLK ─────────→ SCLK
- SS   ─────────→ SS
-```
+### Specifications
+- Two wires: SDA (data) and SCL (clock)
+- 128 addressable devices (7-bit addressing)
+- Speed modes: 100 kbps, 400 kbps, 1 Mbps, 3.4 Mbps
+- Master-slave architecture
 
-- 4 wires: MOSI, MISO, SCLK, SS
-- Full-duplex
-- Speed: tens of MHz
-- No addressing (chip select)
+### Speed Modes
 
-## UART (Universal Asynchronous Receiver-Transmitter)
+| Mode | Speed |
+|------|-------|
+| Standard | 100 kbps |
+| Fast | 400 kbps |
+| Fast Plus | 1 Mbps |
+| High Speed | 3.4 Mbps |
 
-**Purpose:** Simple asynchronous serial
+## SPI (1980s)
 
-```
-Device A        Device B
-   TX ─────────→ RX
-   RX ←───────── TX
-  GND ─────────── GND
-```
+### Purpose
+Developed by Motorola for high-speed synchronous communication.
 
-- No clock line (asynchronous)
-- Baud rates: 9600 - 115200 bps common
+### Specifications
+- Four wires: SCLK, MOSI, MISO, SS
+- Full-duplex communication
+- Speeds up to tens of MHz
+- No addressing (chip select lines)
+
+### Signal Functions
+
+| Signal | Function |
+|--------|----------|
+| SCLK | Serial Clock |
+| MOSI | Master Out, Slave In |
+| MISO | Master In, Slave Out |
+| SS/CS | Slave Select / Chip Select |
+
+### SPI Modes
+
+| Mode | CPOL | CPHA | Description |
+|------|------|------|-------------|
+| 0 | 0 | 0 | Sample on rising edge |
+| 1 | 0 | 1 | Sample on falling edge |
+| 2 | 1 | 0 | Sample on falling edge |
+| 3 | 1 | 1 | Sample on rising edge |
+
+## UART (1960s)
+
+### Purpose
+Asynchronous serial interface for bidirectional communication.
+
+### Specifications
+- Asynchronous (no clock line)
+- Common speeds: 9600, 115200 baud
 - Start/stop bits for synchronization
+- Optional parity bit
 
-## USB (Universal Serial Bus)
+### Baud Rate Calculation
 
-**Purpose:** Standardized peripheral connectivity
+$$
+\text{Bit Time} = \frac{1}{\text{Baud Rate}}
+$$
 
-| Version | Speed | Name |
-|---------|-------|------|
-| USB 1.1 | 12 Mbps | Full Speed |
-| USB 2.0 | 480 Mbps | High Speed |
-| USB 3.0 | 5 Gbps | SuperSpeed |
-| USB 3.2 | 20 Gbps | SuperSpeed+ |
-| USB 4 | 40 Gbps | - |
+At 115200 baud: Bit Time = 8.68 microseconds
 
-## CAN (Controller Area Network)
+## USB (1996)
 
-**Purpose:** Automotive and industrial reliability
+### Purpose
+Standardized peripheral interface for consumer electronics.
 
-```
-ECU 1 ──┬── ECU 2 ──┬── ECU 3
-     CAN_H         CAN_H
-     CAN_L         CAN_L
-```
+### Version Evolution
 
-- Differential 2-wire bus
-- Built-in error detection
-- Priority-based arbitration
-- Speed: up to 1 Mbps
-- Robust noise immunity
+| Version | Year | Speed |
+|---------|------|-------|
+| USB 1.1 | 1998 | 12 Mbps |
+| USB 2.0 | 2000 | 480 Mbps |
+| USB 3.0 | 2008 | 5 Gbps |
+| USB 3.1 | 2013 | 10 Gbps |
+| USB 3.2 | 2017 | 20 Gbps |
+| USB 4.0 | 2019 | 40 Gbps |
 
-## Selection Guide
+### Features
+- Hot-pluggable
+- Power delivery (up to 240W with USB PD)
+- Tiered star topology
+- Automatic device enumeration
 
-| Requirement | Recommended |
-|-------------|-------------|
+## FireWire / IEEE 1394 (1995)
+
+### Purpose
+Apple's high-speed multimedia protocol for video and storage.
+
+### Specifications
+- FireWire 400: 400 Mbps
+- FireWire 800: 800 Mbps
+- Isochronous data transfer (guaranteed bandwidth)
+- Peer-to-peer communication
+- Hot-pluggable
+
+## CAN (1983)
+
+### Purpose
+Bosch's automotive communication protocol for vehicle networks.
+
+### Specifications
+- Maximum speed: 1 Mbps (CAN 2.0)
+- CAN FD: Up to 8 Mbps
+- Differential signaling
+- Multi-master architecture
+- Automatic error detection and retransmission
+
+### Arbitration
+
+Priority-based arbitration using identifier:
+
+$$
+\text{Lower ID} \rightarrow \text{Higher Priority}
+$$
+
+## Protocol Selection Guide
+
+| Application | Recommended Protocol |
+|-------------|---------------------|
+| Sensor reading | I2C |
+| High-speed display | SPI |
+| Industrial control | RS-485, CAN |
+| Automotive | CAN, CAN FD |
+| Consumer devices | USB |
+| Debug/console | UART |
 | Long distance | RS-485 |
-| Many slow devices | I2C |
-| High-speed IC | SPI |
-| Simple debug | UART |
-| PC peripheral | USB |
-| Automotive | CAN |
+
+## Summary
+
+Key considerations for protocol selection:
+1. **Speed requirements**: USB 4 > SPI > RS-485 > I2C
+2. **Distance**: RS-485 > CAN > RS-232 > others
+3. **Complexity**: USB > CAN > I2C > SPI > UART
+4. **Multi-device**: CAN, RS-485, I2C support multiple nodes
+5. **Application domain**: CAN for automotive, USB for consumer

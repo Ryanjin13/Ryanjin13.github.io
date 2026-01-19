@@ -1,140 +1,91 @@
 ---
-title: "Zero-shot Learning / Few-shot Learning"
-date: 2024-08-01
-description: "Learning new classes with minimal or no training examples"
-categories: ["Artificial Intelligence"]
-tags: ["Deep Learning Basic", "Transfer Learning", "Foundation Models"]
+title: "Zero-Shot and Few-Shot Learning"
+date: 2024-08-02
+description: "Understanding learning paradigms that minimize data requirements"
+categories: ["AI"]
+tags: ["Zero-Shot Learning", "Few-Shot Learning", "Transfer Learning", "Foundation Models"]
 draft: false
 ---
 
+{{< katex >}}
+
 ## Overview
 
-Zero-shot and Few-shot learning enable models to recognize new categories with minimal training data, mimicking how humans rapidly acquire knowledge.
+Zero-shot and few-shot learning represent paradigm shifts in machine learning, enabling models to classify new categories with minimal or no training examples.
 
-## Zero-shot Learning
+## Zero-Shot Learning (ZSL)
 
-**Definition:** Using pre-trained Foundation Models to classify entirely new categories **without any direct training examples**.
+### Definition
 
-```
-Foundation Model → Inference on Unseen Classes → Prediction
-     (pre-trained)       (no examples)
-```
+Zero-shot learning enables classification of entirely new categories without any training examples, using knowledge from pre-trained foundation models.
 
-### How It Works
+$$
+P(y_{new}|x) = f(x; \theta_{foundation}, \text{semantic\_info})
+$$
 
-The model leverages learned semantic relationships to infer about completely new objects or concepts.
-
-**Example:**
-- Training: Dog, Cat, Horse images
-- Inference: Classify "Zebra" (never seen)
-- Method: Model knows "striped horse-like animal" → Zebra
-
-### Three Training Approaches
+### Training Methodologies
 
 #### 1. Embedding Space Learning
 
-Connect objects and meanings in abstract space to infer relationships to unseen classes.
+Maps images and semantic information into a shared conceptual space:
 
-```
-Visual Features ──┐
-                  ├──→ Shared Embedding Space ──→ Classification
-Semantic Features ─┘
-```
+$$
+\text{similarity}(x, c) = \cos(f_{image}(x), f_{semantic}(c))
+$$
 
-#### 2. Attribute-based Learning
+#### 2. Attribute-Based Learning
 
-Focus on detailed properties and semantic attributes rather than general features.
+Uses detailed semantic properties to describe classes:
 
-| Animal | Stripes | Four-legged | Domestic |
-|--------|---------|-------------|----------|
-| Cat | No | Yes | Yes |
-| Zebra | Yes | Yes | No |
+| Class | Furry | Has Wings | Four Legs |
+|-------|-------|-----------|-----------|
+| Cat | Yes | No | Yes |
+| Bird | No | Yes | No |
+| Horse | Yes | No | Yes |
 
-Model learns: "Striped + Four-legged + Wild" → Zebra
+#### 3. Text-Image Linking
 
-#### 3. Text-Image Linking (CLIP-style)
+CLIP-style contrastive training:
 
-Combine image data with textual descriptions.
+$$
+\mathcal{L} = -\frac{1}{N}\sum_{i=1}^{N}\log\frac{\exp(sim(I_i, T_i)/\tau)}{\sum_{j=1}^{N}\exp(sim(I_i, T_j)/\tau)}
+$$
 
-```
-Image Encoder ──────┐
-                    ├──→ Similarity Matching ──→ Classification
-Text Encoder ───────┘
-    "A photo of a zebra"
-```
+## Few-Shot Learning (FSL)
 
-## Few-shot Learning
+### Definition
 
-**Definition:** Using transfer learning with **minimal labeled data** (typically 1-5 examples per class) to adapt to new classes.
+Few-shot learning enables learning new categories from only 1-5 examples.
 
-```
-Foundation Model → Fine-tune with K examples → New Classifier
-                        (K = 1~5)
-```
+### Approaches
 
-### Types
+#### Meta-Learning (Learning to Learn)
 
-| Type | Examples per Class | Description |
-|------|-------------------|-------------|
-| 1-shot | 1 | Single example per class |
-| 5-shot | 5 | Five examples per class |
-| N-shot | N | N examples per class |
+$$
+\theta^* = \arg\min_\theta \sum_{\mathcal{T}_i} \mathcal{L}(\mathcal{T}_i; \theta)
+$$
 
-### Advantages
+#### Metric Learning
 
-- **Reduced annotation cost** - Minimal labeling required
-- **Faster training** - Quick adaptation
-- **Practical** - Real-world scenarios often have limited data
+Prototypical Networks:
 
-### Common Approaches
-
-#### 1. Metric Learning
-
-Learn a distance function to compare query images with support examples.
-
-```
-Support Set (K examples) ──┐
-                           ├──→ Distance Metric ──→ Classification
-Query Image ───────────────┘
-```
-
-#### 2. Meta-Learning (Learning to Learn)
-
-Train model to quickly adapt to new tasks.
-
-```
-Task 1: Learn cat vs dog
-Task 2: Learn car vs bike
-   ...
-New Task: Learn zebra vs giraffe (with few examples)
-```
-
-#### 3. Prototypical Networks
-
-Compute class prototypes from support examples.
-
-```python
-# Prototype = mean of support embeddings
-prototype_c = mean(embeddings[class_c])
-
-# Classify by nearest prototype
-prediction = argmin(distance(query, prototypes))
-```
+$$
+P(y=k|x) = \frac{\exp(-d(f(x), c_k))}{\sum_{k'}\exp(-d(f(x), c_{k'}))}
+$$
 
 ## Comparison
 
-| Aspect | Zero-shot | Few-shot |
+| Aspect | Zero-Shot | Few-Shot |
 |--------|-----------|----------|
-| Training examples | 0 | 1-5 per class |
-| Relies on | Semantic knowledge | Example similarity |
+| Training Examples | 0 | 1-5 |
+| Auxiliary Info | Required | Optional |
 | Flexibility | High | Medium |
 | Accuracy | Lower | Higher |
-| Data requirements | None | Minimal |
 
-## Applications
+## Summary
 
-- **Image classification** with new categories
-- **Natural language processing** tasks
-- **Medical imaging** with rare conditions
-- **Robotics** for new object manipulation
-- **Recommendation systems** for new items
+Key takeaways:
+1. Zero-shot: No examples needed, relies on semantic knowledge
+2. Few-shot: 1-5 examples enable rapid adaptation
+3. Foundation models enable both paradigms through transfer
+4. Applications reduce data annotation burden significantly
