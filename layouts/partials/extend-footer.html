@@ -242,23 +242,68 @@ function toggleSubcategory(el) {
   }
 }
 
-// Hero background fade on scroll
+// Hero background fade + content style transition on scroll
 (function() {
   const hero = document.getElementById('heroBackground');
-  if (!hero) return;
+  const contentSections = document.querySelectorAll('main > section, main section.space-y-10, main section.w-full, main .grid');
 
   const fadeStart = 0;
-  const fadeEnd = window.innerHeight * 0.8;
+  const fadeEnd = window.innerHeight * 0.6;
 
-  function updateOpacity() {
+  function updateStyles() {
     const scrollY = window.scrollY;
-    let opacity = 1 - (scrollY - fadeStart) / (fadeEnd - fadeStart);
-    opacity = Math.max(0, Math.min(1, opacity));
-    hero.style.opacity = opacity;
+
+    // Calculate progress (0 = top, 1 = scrolled past fadeEnd)
+    let progress = (scrollY - fadeStart) / (fadeEnd - fadeStart);
+    progress = Math.max(0, Math.min(1, progress));
+
+    // Hero background fades out
+    if (hero) {
+      hero.style.opacity = 1 - progress;
+    }
+
+    // Content sections transition
+    contentSections.forEach(function(section) {
+      // Background: transparent -> white (or dark in dark mode)
+      const bgOpacity = progress * 0.95;
+      const isDark = document.documentElement.classList.contains('dark');
+
+      if (isDark) {
+        section.style.background = `rgba(30, 30, 30, ${bgOpacity})`;
+      } else {
+        section.style.background = `rgba(255, 255, 255, ${bgOpacity})`;
+      }
+
+      // Border radius appears as background becomes visible
+      section.style.borderRadius = progress > 0.1 ? '12px' : '0';
+      section.style.padding = progress > 0.1 ? '30px' : '10px';
+
+      // Text color transitions
+      const links = section.querySelectorAll('a, span, p, h2, h3');
+      links.forEach(function(el) {
+        if (isDark) {
+          // Dark mode: white text throughout
+          el.style.color = '#eee';
+        } else {
+          // Light mode: white -> dark as we scroll
+          const r = Math.round(255 - (255 - 51) * progress);
+          const g = Math.round(255 - (255 - 51) * progress);
+          const b = Math.round(255 - (255 - 51) * progress);
+          el.style.color = `rgb(${r}, ${g}, ${b})`;
+        }
+      });
+    });
   }
 
-  window.addEventListener('scroll', updateOpacity);
-  updateOpacity();
+  window.addEventListener('scroll', updateStyles);
+  window.addEventListener('resize', updateStyles);
+
+  // Initial call
+  updateStyles();
+
+  // Also update on theme change
+  const observer = new MutationObserver(updateStyles);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 })();
 
 // TOC active highlighting is handled by Blowfish's smartTOC feature

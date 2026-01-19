@@ -132,37 +132,25 @@ main header [class*="neutral"] {
   color: rgba(255,255,255,0.7) !important;
 }
 
-/* 모든 리스트/카테고리 페이지 본문 - 배경 추가 */
+/* 모든 리스트/카테고리 페이지 본문 - JavaScript가 동적으로 제어 */
 main > section,
 main section.space-y-10,
 main section.w-full,
 main .grid,
 main > div > section {
-  background: rgba(255,255,255,0.95) !important;
-  padding: 30px !important;
-  border-radius: 12px !important;
-  margin-top: 20px !important;
-}
-.dark main > section,
-.dark main section.space-y-10,
-.dark main section.w-full,
-.dark main .grid,
-.dark main > div > section {
-  background: rgba(30,30,30,0.95) !important;
+  background: transparent;
+  padding: 10px;
+  border-radius: 0;
+  margin-top: 20px;
+  transition: background 0.15s ease, padding 0.15s ease, border-radius 0.15s ease;
 }
 
-/* 리스트 아이템 텍스트 색상 */
+/* 리스트 아이템 텍스트 - JavaScript가 동적으로 제어 */
 main section a,
 main section span,
 main section p,
 main section h2 {
-  color: #333 !important;
-}
-.dark main section a,
-.dark main section span,
-.dark main section p,
-.dark main section h2 {
-  color: #eee !important;
+  transition: color 0.15s ease;
 }
 
 /* Article (single post) page styles - NOT homepage */
