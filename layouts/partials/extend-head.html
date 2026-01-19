@@ -118,27 +118,51 @@ header h1.font-extrabold {
   white-space: normal !important;
 }
 
-/* 카테고리/리스트 페이지 - 어두운 배경에서 흰색 텍스트 */
+/* 모든 리스트/카테고리/태그 페이지 - 헤더 흰색 텍스트 */
 main > header,
-main > header * {
+main > header *,
+main header h1,
+main header .mt-1,
+main header .text-base {
   color: #ffffff !important;
 }
 main > header .text-neutral-500,
-main > header .dark\:text-neutral-400 {
+main > header .text-neutral-400,
+main header [class*="neutral"] {
   color: rgba(255,255,255,0.7) !important;
 }
 
-/* 리스트 페이지 본문 - 배경 추가해서 가독성 확보 */
-main > section.space-y-10,
-main > section.w-full {
+/* 모든 리스트/카테고리 페이지 본문 - 배경 추가 */
+main > section,
+main section.space-y-10,
+main section.w-full,
+main .grid,
+main > div > section {
   background: rgba(255,255,255,0.95) !important;
   padding: 30px !important;
   border-radius: 12px !important;
   margin-top: 20px !important;
 }
-.dark main > section.space-y-10,
-.dark main > section.w-full {
+.dark main > section,
+.dark main section.space-y-10,
+.dark main section.w-full,
+.dark main .grid,
+.dark main > div > section {
   background: rgba(30,30,30,0.95) !important;
+}
+
+/* 리스트 아이템 텍스트 색상 */
+main section a,
+main section span,
+main section p,
+main section h2 {
+  color: #333 !important;
+}
+.dark main section a,
+.dark main section span,
+.dark main section p,
+.dark main section h2 {
+  color: #eee !important;
 }
 
 /* Article (single post) page styles - NOT homepage */
