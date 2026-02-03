@@ -325,8 +325,8 @@ article section {
 div.min-w-0 {
   flex: 1 !important;
   min-width: 0 !important;
-  max-width: none !important;
-  margin-right: 10px !important;
+  max-width: calc(100% - 200px) !important;
+  margin-right: 20px !important;
 }
 .article-content,
 .article-content.prose,
@@ -342,13 +342,14 @@ div.prose {
   --tw-prose-body: none !important;
   max-width: none !important;
 }
-/* TOC wrapper - narrower, closer to right edge */
+/* TOC wrapper - fixed to right edge */
 .toc-wrapper,
 div.toc {
   width: 180px !important;
   min-width: 180px !important;
   flex-shrink: 0 !important;
-  position: sticky !important;
+  position: fixed !important;
+  right: 20px !important;
   top: 100px !important;
   align-self: flex-start !important;
   margin-right: 0 !important;
