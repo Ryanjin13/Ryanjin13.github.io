@@ -1,6 +1,6 @@
 ---
 title: "Complete Guide to Rotation Representations"
-date: 2024-08-15
+date: 2025-02-03
 description: "From basic math to geometric intuition and optimization examples - Euler angles, rotation matrices, quaternions, and Lie algebra"
 categories: ["3D Vision"]
 tags: ["Rotation", "Euler Angles", "Quaternion", "Lie Algebra", "Optimization", "3D Graphics", "Robotics"]
