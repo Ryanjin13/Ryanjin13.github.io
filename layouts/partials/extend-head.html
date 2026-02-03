@@ -299,34 +299,27 @@ article header a:hover {
   color: #fff !important;
 }
 
-/* Article layout - FORCE full width */
+/* Body max-width and padding now set in baseof.html template */
+/* Article layout - full width */
 .article-wrapper,
 article,
 main article,
 main > article {
   width: 100% !important;
   max-width: 100% !important;
-  padding: 0 1vw 0 2vw !important;
 }
 .article-header,
 .article-footer {
   width: 100% !important;
   max-width: none !important;
 }
-.article-body,
-section.flex,
-article section {
-  display: block !important;
-  width: calc(100% - 220px) !important;
-  max-width: calc(100% - 220px) !important;
-}
+/* Article content elements */
 .article-content-wrapper,
 .min-w-0,
 div.min-w-0 {
   width: 100% !important;
   min-width: 0 !important;
   max-width: 100% !important;
-  margin-right: 0 !important;
 }
 .article-content,
 .article-content.prose,
@@ -342,14 +335,25 @@ div.prose {
   --tw-prose-body: none !important;
   max-width: 100% !important;
 }
-/* TOC wrapper - fixed to right edge */
+/* MathJax protection - preserve flex layout */
+.MathJax,
+.MathJax *,
+mjx-container,
+mjx-container *,
+[class*="mjx-"],
+[class*="mjx-"] * {
+  display: revert !important;
+  width: revert !important;
+  max-width: revert !important;
+}
+/* TOC wrapper - fixed to right side */
 .toc-wrapper,
 div.toc {
-  width: 180px !important;
-  min-width: 180px !important;
+  width: 220px !important;
+  min-width: 220px !important;
   flex-shrink: 0 !important;
   position: fixed !important;
-  right: 20px !important;
+  right: 30px !important;
   top: 100px !important;
   align-self: flex-start !important;
   margin-right: 0 !important;
