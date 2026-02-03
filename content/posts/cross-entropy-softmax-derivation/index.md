@@ -14,10 +14,10 @@ draft: false
 In the final stage of a classification neural network, the output flows through three sequential transformations:
 
 $$
-\underbrace{\text{Neural Network}}_{\text{feature extraction}} \longrightarrow
-\underbrace{z_i}_{\text{logits}} \longrightarrow
-\underbrace{p_i}_{\text{softmax}} \longrightarrow
-\underbrace{L}_{\text{cross entropy}}
+\underbrace{\vphantom{\frac{A}{B}}\text{Neural Network}}_{\text{feature extraction}} \longrightarrow
+\underbrace{\vphantom{\frac{A}{B}}z_i}_{\text{logits}} \longrightarrow
+\underbrace{\vphantom{\frac{A}{B}}p_i}_{\text{softmax}} \longrightarrow
+\underbrace{\vphantom{\frac{A}{B}}L}_{\text{cross entropy}}
 $$
 
 Each stage has a specific role:
@@ -49,9 +49,9 @@ Cross entropy measures how well the predicted distribution $p$ matches the true 
 
 $$
 L = -
-\underbrace{\sum_i}_{\text{all classes}}
-\overbrace{y_i}^{\text{true label}}
-\underbrace{\log({\color{blue}p_i})}_{\text{log probability}} \tag{2}
+\underbrace{\vphantom{\sum_i^n}\sum_i}_{\text{all classes}}
+\overbrace{\vphantom{\sum_i^n}y_i}^{\text{true label}}
+\underbrace{\vphantom{\sum_i^n}\log({\color{blue}p_i})}_{\text{log probability}} \tag{2}
 $$
 
 where:
@@ -67,9 +67,9 @@ To update network weights, we need $\frac{\partial L}{\partial z_i}$ (gradient w
 By the chain rule, we decompose this through intermediate variables:
 
 $$
-\underbrace{\frac{\partial L}{\partial z_i}}_{\text{what we want}} =
-{\color{red}\underbrace{\frac{\partial L}{\partial p}}_{\text{CE gradient}}} \cdot
-{\color{blue}\underbrace{\frac{\partial p}{\partial z}}_{\text{softmax gradient}}} \tag{3}
+\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial L}{\partial z_i}}_{\text{what we want}} =
+{\color{red}\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial L}{\partial p}}_{\text{CE gradient}}} \cdot
+{\color{blue}\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial p}{\partial z}}_{\text{softmax gradient}}} \tag{3}
 $$
 
 We will derive each term separately:
