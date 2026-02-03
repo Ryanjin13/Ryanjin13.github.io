@@ -299,14 +299,14 @@ article header a:hover {
   color: #fff !important;
 }
 
-/* Article layout - FORCE full width, minimal padding */
+/* Article layout - FORCE full width */
 .article-wrapper,
 article,
 main article,
 main > article {
   width: 100% !important;
   max-width: 100% !important;
-  padding: 0 2vw !important;
+  padding: 0 1vw 0 2vw !important;
 }
 .article-header,
 .article-footer {
@@ -316,31 +316,31 @@ main > article {
 .article-body,
 section.flex,
 article section {
-  display: flex !important;
-  width: 100% !important;
-  max-width: none !important;
+  display: block !important;
+  width: calc(100% - 220px) !important;
+  max-width: calc(100% - 220px) !important;
 }
 .article-content-wrapper,
 .min-w-0,
 div.min-w-0 {
-  flex: 1 !important;
+  width: 100% !important;
   min-width: 0 !important;
-  max-width: calc(100% - 200px) !important;
-  margin-right: 20px !important;
+  max-width: 100% !important;
+  margin-right: 0 !important;
 }
 .article-content,
 .article-content.prose,
 .prose,
 div.prose {
   width: 100% !important;
-  max-width: none !important;
+  max-width: 100% !important;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
 }
 /* Override Tailwind prose max-width */
 .prose {
   --tw-prose-body: none !important;
-  max-width: none !important;
+  max-width: 100% !important;
 }
 /* TOC wrapper - fixed to right edge */
 .toc-wrapper,
