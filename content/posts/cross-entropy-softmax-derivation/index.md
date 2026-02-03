@@ -34,7 +34,7 @@ Each stage has a specific role:
 The softmax function transforms raw logits into probabilities that sum to 1:
 
 $$
-\underbrace{{\color{blue}p_i}}_{\text{probability}} = 
+\underbrace{\vphantom{\frac{e^{z_i}}{\sum_j}}{\color{blue}p_i}}_{\text{probability}} =
 \underbrace{\frac{e^{z_i}}{\sum_j e^{z_j}}}_{\text{softmax function}} \tag{1}
 $$
 
@@ -93,18 +93,18 @@ $$
 Taking the partial derivative with respect to $p_i$:
 
 $$
-{\color{red}\underbrace{\frac{\partial L}{\partial p_i}}_{\text{CE gradient}}} =
+{\color{red}\underbrace{\vphantom{\frac{\partial}{\partial p}}\frac{\partial L}{\partial p_i}}_{\text{CE gradient}}} =
 \frac{\partial}{\partial p_i}\left[
-\underbrace{-y_i}_{\text{label}}
-\underbrace{\log(p_i)}_{\text{log prob}}
+\underbrace{\vphantom{\frac{\partial}{\partial p}}-y_i}_{\text{label}}
+\underbrace{\vphantom{\frac{\partial}{\partial p}}\log(p_i)}_{\text{log prob}}
 \right] \tag{4}
 $$
 
 Using the derivative of natural log: $\frac{d}{dx}\log(x) = \frac{1}{x}$
 
 $$
-\underbrace{\frac{\partial}{\partial p_i}\log_e(p_i)}_{\text{natural log}} =
-\underbrace{\frac{1}{p_i}}_{\text{derivative of log}} \tag{5}
+\underbrace{\vphantom{\frac{1}{p}}\frac{\partial}{\partial p_i}\log_e(p_i)}_{\text{natural log}} =
+\underbrace{\vphantom{\frac{1}{p}}\frac{1}{p_i}}_{\text{derivative of log}} \tag{5}
 $$
 
 Therefore:
@@ -134,9 +134,9 @@ $$
 Now softmax becomes:
 
 $$
-\underbrace{p_i}_{\text{probability}} = 
-\frac{\overbrace{e^{z_i}}^{\text{numerator}}}
-     {\underbrace{S}_{\text{normalizer}}} \tag{9}
+\underbrace{\vphantom{\frac{e}{S}}p_i}_{\text{probability}} =
+\frac{\overbrace{\vphantom{S}e^{z_i}}^{\text{numerator}}}
+     {\underbrace{\vphantom{e}S}_{\text{normalizer}}} \tag{9}
 $$
 
 **Key observation:** $S$ contains ALL $z_k$ terms. Therefore:
@@ -152,10 +152,10 @@ We must consider two cases due to the summation in the denominator.
 When differentiating $p_i$ with respect to $z_i$:
 
 $$
-{\color{blue}\underbrace{\frac{\partial p_i}{\partial z_i}}_{\text{diagonal term}}} =
+{\color{blue}\underbrace{\vphantom{\frac{\partial}{\partial z}}\frac{\partial p_i}{\partial z_i}}_{\text{diagonal term}}} =
 \frac{\partial}{\partial z_i}\left(
-\frac{\overbrace{e^{z_i}}^{f}}
-     {\underbrace{S}_{g}}
+\frac{\overbrace{\vphantom{S}e^{z_i}}^{f}}
+     {\underbrace{\vphantom{e}S}_{g}}
 \right) \tag{10}
 $$
 
@@ -167,10 +167,10 @@ where:
 
 $$
 = \frac{
-\overbrace{e^{z_i}}^{f'} \cdot 
-\overbrace{S}^{g} -
-\overbrace{e^{z_i}}^{f} \cdot 
-\overbrace{e^{z_i}}^{g'}}
+\overbrace{\vphantom{S}e^{z_i}}^{f'} \cdot
+\overbrace{\vphantom{e}S}^{g} -
+\overbrace{\vphantom{S}e^{z_i}}^{f} \cdot
+\overbrace{\vphantom{S}e^{z_i}}^{g'}}
 {S^2} \tag{11}
 $$
 
@@ -178,23 +178,23 @@ Factoring out $e^{z_i}$:
 
 $$
 = \frac{
-\overbrace{e^{z_i}}^{\text{common}} \cdot
-\overbrace{(S-e^{z_i})}^{\text{remaining}}}
+\overbrace{\vphantom{S}e^{z_i}}^{\text{common}} \cdot
+\overbrace{\vphantom{S}(S-e^{z_i})}^{\text{remaining}}}
 {S^2} \tag{12}
 $$
 
 Separating the fractions:
 
 $$
-= \underbrace{\frac{e^{z_i}}{S}}_{p_i} \cdot
-  \underbrace{\frac{S-e^{z_i}}{S}}_{1-p_i} \tag{13}
+= \underbrace{\vphantom{\frac{S}{S}}\frac{e^{z_i}}{S}}_{p_i} \cdot
+  \underbrace{\vphantom{\frac{S}{S}}\frac{S-e^{z_i}}{S}}_{1-p_i} \tag{13}
 $$
 
 Recognizing $p_i = \frac{e^{z_i}}{S}$:
 
 $$
-= \underbrace{\frac{e^{z_i}}{S}}_{p_i} \cdot
-\left(1 - \underbrace{\frac{e^{z_i}}{S}}_{p_i}\right) \tag{14}
+= \underbrace{\vphantom{\frac{S}{S}}\frac{e^{z_i}}{S}}_{p_i} \cdot
+\left(1 - \underbrace{\vphantom{\frac{S}{S}}\frac{e^{z_i}}{S}}_{p_i}\right) \tag{14}
 $$
 
 $$
@@ -206,10 +206,10 @@ $$
 When differentiating $p_i$ with respect to $z_j$ (where $j \neq i$):
 
 $$
-{\color{blue}\underbrace{\frac{\partial p_i}{\partial z_j}}_{\text{off-diagonal}}} =
+{\color{blue}\underbrace{\vphantom{\frac{\partial}{\partial z}}\frac{\partial p_i}{\partial z_j}}_{\text{off-diagonal}}} =
 \frac{\partial}{\partial z_j}\left(
-\frac{\overbrace{e^{z_i}}^{\text{const w.r.t. }z_j}}
-     {\underbrace{S}_{\text{contains }z_j}}
+\frac{\overbrace{\vphantom{S}e^{z_i}}^{\text{const w.r.t. }z_j}}
+     {\underbrace{\vphantom{e}S}_{\text{contains }z_j}}
 \right) \tag{16}
 $$
 
@@ -219,22 +219,22 @@ Here:
 
 $$
 = \frac{
-\overbrace{0}^{f'} \cdot S -
-\overbrace{e^{z_i}}^{f} \cdot
-\overbrace{e^{z_j}}^{g'}}
+\overbrace{\vphantom{S}0}^{f'} \cdot S -
+\overbrace{\vphantom{S}e^{z_i}}^{f} \cdot
+\overbrace{\vphantom{S}e^{z_j}}^{g'}}
 {S^2} \tag{17}
 $$
 
 $$
 = -\frac{
-\overbrace{e^{z_i}}^{\text{from }p_i} \cdot
-\overbrace{e^{z_j}}^{\text{from }p_j}}
+\overbrace{\vphantom{S}e^{z_i}}^{\text{from }p_i} \cdot
+\overbrace{\vphantom{S}e^{z_j}}^{\text{from }p_j}}
 {S^2} \tag{18}
 $$
 
 $$
-= -\underbrace{\frac{e^{z_i}}{S}}_{p_i} \cdot
-   \underbrace{\frac{e^{z_j}}{S}}_{p_j} \tag{19}
+= -\underbrace{\vphantom{\frac{S}{S}}\frac{e^{z_i}}{S}}_{p_i} \cdot
+   \underbrace{\vphantom{\frac{S}{S}}\frac{e^{z_j}}{S}}_{p_j} \tag{19}
 $$
 
 $$
@@ -275,14 +275,14 @@ This splits into two cases based on our softmax derivative:
 
 $$
 \frac{\partial L}{\partial z_i} =
-\underbrace{{\color{red}\frac{\partial L}{\partial p_i}} \cdot {\color{blue}\frac{\partial p_i}{\partial z_i}}}_{\text{when }j=i} +
+\underbrace{\vphantom{\sum_{j \neq i}}{\color{red}\frac{\partial L}{\partial p_i}} \cdot {\color{blue}\frac{\partial p_i}{\partial z_i}}}_{\text{when }j=i} +
 \underbrace{\sum_{j \neq i}{\color{red}\frac{\partial L}{\partial p_j}} \cdot {\color{blue}\frac{\partial p_j}{\partial z_i}}}_{\text{when }j \neq i} \tag{23}
 $$
 
 Substituting our derived values from equations (6), (15), and (20):
 
 $$
-= \underbrace{{\color{red}\left(-\frac{y_i}{p_i}\right)} \cdot {\color{blue}p_i(1-p_i)}}_{\text{diagonal term}} + 
+= \underbrace{\vphantom{\sum_{j \neq i}}{\color{red}\left(-\frac{y_i}{p_i}\right)} \cdot {\color{blue}p_i(1-p_i)}}_{\text{diagonal term}} +
 \underbrace{\sum_{j \neq i}{\color{red}\left(-\frac{y_j}{p_j}\right)} \cdot {\color{blue}(-p_j \cdot p_i)}}_{\text{off-diagonal terms}} \tag{24}
 $$
 
@@ -301,7 +301,7 @@ $$
 Combining:
 
 $$
-= \underbrace{-y_i + y_i p_i}_{\text{from diagonal}} + 
+= \underbrace{\vphantom{\sum_{j \neq i}}-y_i + y_i p_i}_{\text{from diagonal}} +
 \underbrace{\sum_{j \neq i} y_j \cdot p_i}_{\text{from off-diagonal}} \tag{27}
 $$
 
@@ -329,9 +329,9 @@ $$
 
 $$
 \boxed{
-\underbrace{\frac{\partial L}{\partial z_i}}_{\text{gradient}} = 
-\underbrace{p_i}_{\text{predicted}} - 
-\underbrace{y_i}_{\text{true}}
+\underbrace{\vphantom{\frac{\partial L}{\partial z}}\frac{\partial L}{\partial z_i}}_{\text{gradient}} =
+\underbrace{\vphantom{\frac{\partial L}{\partial z}}p_i}_{\text{predicted}} -
+\underbrace{\vphantom{\frac{\partial L}{\partial z}}y_i}_{\text{true}}
 } \tag{32}
 $$
 
