@@ -14,10 +14,10 @@ draft: false
 In the final stage of a classification neural network, the output flows through three sequential transformations:
 
 $$
-\underbrace{\vphantom{\frac{A^{A}}{B}}\text{Neural Network} \rule{0pt}{3.5em}}_{\text{feature extraction}} \longrightarrow
-\underbrace{\vphantom{\frac{A^{A}}{B}}z_i \rule{0pt}{3.5em}}_{\text{logits}} \longrightarrow
-\underbrace{\vphantom{\frac{A^{A}}{B}}p_i \rule{0pt}{3.5em}}_{\text{softmax}} \longrightarrow
-\underbrace{\vphantom{\frac{A^{A}}{B}}L \rule{0pt}{3.5em}}_{\text{cross entropy}}
+\underbrace{\vphantom{\frac{A^{A}}{B}}\text{Neural Network}}_{\text{feature extraction}} \longrightarrow
+\underbrace{\vphantom{\frac{A^{A}}{B}}z_i}_{\text{logits}} \longrightarrow
+\underbrace{\vphantom{\frac{A^{A}}{B}}p_i}_{\text{softmax}} \longrightarrow
+\underbrace{\vphantom{\frac{A^{A}}{B}}L}_{\text{cross entropy}}
 $$
 
 Each stage has a specific role:
@@ -49,9 +49,9 @@ Cross entropy measures how well the predicted distribution $p$ matches the true 
 
 $$
 L = -
-\underbrace{\vphantom{\sum_{i}^{n}}\sum_i \rule{0pt}{3.5em}}_{\text{all classes}}
-\overbrace{\vphantom{\sum_{i}^{n}}y_i \rule[-2em]{0pt}{0pt}}^{\text{true label}}
-\underbrace{\vphantom{\sum_{i}^{n}}\log({\color{blue}p_i}) \rule{0pt}{3.5em}}_{\text{log probability}} \tag{2}
+\underbrace{\vphantom{\sum_{i}^{n}}\sum_i}_{\text{all classes}}
+\overbrace{\vphantom{\sum_{i}^{n}}y_i}^{\text{true label}}
+\underbrace{\vphantom{\sum_{i}^{n}}\log({\color{blue}p_i})}_{\text{log probability}} \tag{2}
 $$
 
 where:
@@ -67,9 +67,9 @@ To update network weights, we need $\frac{\partial L}{\partial z_i}$ (gradient w
 By the chain rule, we decompose this through intermediate variables:
 
 $$
-\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial L}{\partial z_i} \rule{0pt}{3.5em}}_{\text{what we want}} =
-{\color{red}\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial L}{\partial p} \rule{0pt}{3.5em}}_{\text{CE gradient}}} \cdot
-{\color{blue}\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial p}{\partial z} \rule{0pt}{3.5em}}_{\text{softmax gradient}}} \tag{3}
+\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial L}{\partial z_i}}_{\text{what we want}} =
+{\color{red}\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial L}{\partial p}}_{\text{CE gradient}}} \cdot
+{\color{blue}\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial p}{\partial z}}_{\text{softmax gradient}}} \tag{3}
 $$
 
 We will derive each term separately:
@@ -93,18 +93,18 @@ $$
 Taking the partial derivative with respect to $p_i$:
 
 $$
-{\color{red}\underbrace{\vphantom{\frac{\partial}{\partial p_i}}\frac{\partial L}{\partial p_i} \rule{0pt}{3.5em}}_{\text{CE gradient}}} =
+{\color{red}\underbrace{\vphantom{\frac{\partial}{\partial p_i}}\frac{\partial L}{\partial p_i}}_{\text{CE gradient}}} =
 \frac{\partial}{\partial p_i}\left[
-\underbrace{\vphantom{\frac{\partial}{\partial p_i}}-y_i \rule{0pt}{3.5em}}_{\text{label}}
-\underbrace{\vphantom{\frac{\partial}{\partial p_i}}\log(p_i) \rule{0pt}{3.5em}}_{\text{log prob}}
+\underbrace{\vphantom{\frac{\partial}{\partial p_i}}-y_i}_{\text{label}}
+\underbrace{\vphantom{\frac{\partial}{\partial p_i}}\log(p_i)}_{\text{log prob}}
 \right] \tag{4}
 $$
 
 Using the derivative of natural log: $\frac{d}{dx}\log(x) = \frac{1}{x}$
 
 $$
-\underbrace{\vphantom{\frac{1}{p_i}}\frac{\partial}{\partial p_i}\log_e(p_i) \rule{0pt}{3.5em}}_{\text{natural log}} =
-\underbrace{\vphantom{\frac{1}{p_i}}\frac{1}{p_i} \rule{0pt}{3.5em}}_{\text{derivative of log}} \tag{5}
+\underbrace{\vphantom{\frac{1}{p_i}}\frac{\partial}{\partial p_i}\log_e(p_i)}_{\text{natural log}} =
+\underbrace{\vphantom{\frac{1}{p_i}}\frac{1}{p_i}}_{\text{derivative of log}} \tag{5}
 $$
 
 Therefore:
@@ -275,15 +275,15 @@ This splits into two cases based on our softmax derivative:
 
 $$
 \frac{\partial L}{\partial z_i} =
-\underbrace{\vphantom{\sum_{j \neq i}}{\color{red}\frac{\partial L}{\partial p_i}} \cdot {\color{blue}\frac{\partial p_i}{\partial z_i}} \rule{0pt}{3.5em}}_{\text{when }j=i} +
-\underbrace{\sum_{j \neq i}{\color{red}\frac{\partial L}{\partial p_j}} \cdot {\color{blue}\frac{\partial p_j}{\partial z_i}} \rule{0pt}{3.5em}}_{\text{when }j \neq i} \tag{23}
+\underbrace{\vphantom{\sum_{j \neq i}}{\color{red}\frac{\partial L}{\partial p_i}} \cdot {\color{blue}\frac{\partial p_i}{\partial z_i}}}_{\text{when }j=i} +
+\underbrace{\sum_{j \neq i}{\color{red}\frac{\partial L}{\partial p_j}} \cdot {\color{blue}\frac{\partial p_j}{\partial z_i}}}_{\text{when }j \neq i} \tag{23}
 $$
 
 Substituting our derived values from equations (6), (15), and (20):
 
 $$
-= \underbrace{\vphantom{\sum_{j \neq i}}{\color{red}\left(-\frac{y_i}{p_i}\right)} \cdot {\color{blue}p_i(1-p_i)} \rule{0pt}{3.5em}}_{\text{diagonal term}} + 
-\underbrace{\sum_{j \neq i}{\color{red}\left(-\frac{y_j}{p_j}\right)} \cdot {\color{blue}(-p_j \cdot p_i)} \rule{0pt}{3.5em}}_{\text{off-diagonal terms}} \tag{24}
+= \underbrace{\vphantom{\sum_{j \neq i}}{\color{red}\left(-\frac{y_i}{p_i}\right)} \cdot {\color{blue}p_i(1-p_i)}}_{\text{diagonal term}} + 
+\underbrace{\sum_{j \neq i}{\color{red}\left(-\frac{y_j}{p_j}\right)} \cdot {\color{blue}(-p_j \cdot p_i)}}_{\text{off-diagonal terms}} \tag{24}
 $$
 
 Simplifying the diagonal term:
@@ -301,8 +301,8 @@ $$
 Combining:
 
 $$
-= \underbrace{\vphantom{\sum_{j \neq i}}-y_i + y_i p_i \rule{0pt}{3.5em}}_{\text{from diagonal}} + 
-\underbrace{\vphantom{\sum_{j \neq i}}\sum_{j \neq i} y_j \cdot p_i \rule{0pt}{3.5em}}_{\text{from off-diagonal}} \tag{27}
+= \underbrace{\vphantom{\sum_{j \neq i}}-y_i + y_i p_i}_{\text{from diagonal}} + 
+\underbrace{\vphantom{\sum_{j \neq i}}\sum_{j \neq i} y_j \cdot p_i}_{\text{from off-diagonal}} \tag{27}
 $$
 
 $$
@@ -329,9 +329,9 @@ $$
 
 $$
 \boxed{
-\underbrace{\vphantom{\frac{\partial L}{\partial z_i}}\frac{\partial L}{\partial z_i} \rule{0pt}{3.5em}}_{\text{gradient}} = 
-\underbrace{\vphantom{\frac{\partial L}{\partial z_i}}p_i \rule{0pt}{3.5em}}_{\text{predicted}} - 
-\underbrace{\vphantom{\frac{\partial L}{\partial z_i}}y_i \rule{0pt}{3.5em}}_{\text{true}}
+\underbrace{\vphantom{\frac{\partial L}{\partial z_i}}\frac{\partial L}{\partial z_i}}_{\text{gradient}} = 
+\underbrace{\vphantom{\frac{\partial L}{\partial z_i}}p_i}_{\text{predicted}} - 
+\underbrace{\vphantom{\frac{\partial L}{\partial z_i}}y_i}_{\text{true}}
 } \tag{32}
 $$
 
