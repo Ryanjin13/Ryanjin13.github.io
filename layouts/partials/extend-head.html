@@ -299,7 +299,12 @@ article header a:hover {
   color: #fff !important;
 }
 
-/* Body max-width and padding now set in baseof.html template */
+/* Body - override Tailwind constraints with CSS */
+body {
+  max-width: none !important;
+  padding-left: 10vw !important;
+  padding-right: 10vw !important;
+}
 /* Article layout - full width */
 .article-wrapper,
 article,
