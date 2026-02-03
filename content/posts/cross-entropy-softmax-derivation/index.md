@@ -34,7 +34,7 @@ Each stage has a specific role:
 The softmax function transforms raw logits into probabilities that sum to 1:
 
 $$
-\underbrace{\vphantom{\frac{e^{z_i}}{\sum_j}}{\color{blue}p_i}}_{\text{probability}} = 
+\underbrace{{\color{blue}p_i}}_{\text{probability}} = 
 \underbrace{\frac{e^{z_i}}{\sum_j e^{z_j}}}_{\text{softmax function}} \tag{1}
 $$
 
@@ -49,9 +49,9 @@ Cross entropy measures how well the predicted distribution $p$ matches the true 
 
 $$
 L = -
-\underbrace{\vphantom{\sum_{i}^{n}}\sum_i}_{\text{all classes}}
-\overbrace{\vphantom{\sum_{i}^{n}}y_i}^{\text{true label}}
-\underbrace{\vphantom{\sum_{i}^{n}}\log({\color{blue}p_i})}_{\text{log probability}} \tag{2}
+\underbrace{\sum_i}_{\text{all classes}}
+\overbrace{y_i}^{\text{true label}}
+\underbrace{\log({\color{blue}p_i})}_{\text{log probability}} \tag{2}
 $$
 
 where:
@@ -67,9 +67,9 @@ To update network weights, we need $\frac{\partial L}{\partial z_i}$ (gradient w
 By the chain rule, we decompose this through intermediate variables:
 
 $$
-\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial L}{\partial z_i}}_{\text{what we want}} =
-{\color{red}\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial L}{\partial p}}_{\text{CE gradient}}} \cdot
-{\color{blue}\underbrace{\vphantom{\frac{\partial L}{\partial p}}\frac{\partial p}{\partial z}}_{\text{softmax gradient}}} \tag{3}
+\underbrace{\frac{\partial L}{\partial z_i}}_{\text{what we want}} =
+{\color{red}\underbrace{\frac{\partial L}{\partial p}}_{\text{CE gradient}}} \cdot
+{\color{blue}\underbrace{\frac{\partial p}{\partial z}}_{\text{softmax gradient}}} \tag{3}
 $$
 
 We will derive each term separately:
@@ -93,18 +93,18 @@ $$
 Taking the partial derivative with respect to $p_i$:
 
 $$
-{\color{red}\underbrace{\vphantom{\frac{\partial}{\partial p_i}}\frac{\partial L}{\partial p_i}}_{\text{CE gradient}}} =
+{\color{red}\underbrace{\frac{\partial L}{\partial p_i}}_{\text{CE gradient}}} =
 \frac{\partial}{\partial p_i}\left[
-\underbrace{\vphantom{\frac{\partial}{\partial p_i}}-y_i}_{\text{label}}
-\underbrace{\vphantom{\frac{\partial}{\partial p_i}}\log(p_i)}_{\text{log prob}}
+\underbrace{-y_i}_{\text{label}}
+\underbrace{\log(p_i)}_{\text{log prob}}
 \right] \tag{4}
 $$
 
 Using the derivative of natural log: $\frac{d}{dx}\log(x) = \frac{1}{x}$
 
 $$
-\underbrace{\vphantom{\frac{1}{p_i}}\frac{\partial}{\partial p_i}\log_e(p_i)}_{\text{natural log}} =
-\underbrace{\vphantom{\frac{1}{p_i}}\frac{1}{p_i}}_{\text{derivative of log}} \tag{5}
+\underbrace{\frac{\partial}{\partial p_i}\log_e(p_i)}_{\text{natural log}} =
+\underbrace{\frac{1}{p_i}}_{\text{derivative of log}} \tag{5}
 $$
 
 Therefore:
@@ -134,7 +134,7 @@ $$
 Now softmax becomes:
 
 $$
-\underbrace{\vphantom{\frac{e^{z_i}}{S}}p_i}_{\text{probability}} = 
+\underbrace{p_i}_{\text{probability}} = 
 \frac{\overbrace{e^{z_i}}^{\text{numerator}}}
      {\underbrace{S}_{\text{normalizer}}} \tag{9}
 $$
@@ -152,7 +152,7 @@ We must consider two cases due to the summation in the denominator.
 When differentiating $p_i$ with respect to $z_i$:
 
 $$
-{\color{blue}\underbrace{\vphantom{\frac{\partial p_i}{\partial z_i}}\frac{\partial p_i}{\partial z_i}}_{\text{diagonal term}}} =
+{\color{blue}\underbrace{\frac{\partial p_i}{\partial z_i}}_{\text{diagonal term}}} =
 \frac{\partial}{\partial z_i}\left(
 \frac{\overbrace{e^{z_i}}^{f}}
      {\underbrace{S}_{g}}
@@ -206,7 +206,7 @@ $$
 When differentiating $p_i$ with respect to $z_j$ (where $j \neq i$):
 
 $$
-{\color{blue}\underbrace{\vphantom{\frac{\partial p_i}{\partial z_j}}\frac{\partial p_i}{\partial z_j}}_{\text{off-diagonal}}} =
+{\color{blue}\underbrace{\frac{\partial p_i}{\partial z_j}}_{\text{off-diagonal}}} =
 \frac{\partial}{\partial z_j}\left(
 \frac{\overbrace{e^{z_i}}^{\text{const w.r.t. }z_j}}
      {\underbrace{S}_{\text{contains }z_j}}
@@ -275,14 +275,14 @@ This splits into two cases based on our softmax derivative:
 
 $$
 \frac{\partial L}{\partial z_i} =
-\underbrace{\vphantom{\sum_{j \neq i}}{\color{red}\frac{\partial L}{\partial p_i}} \cdot {\color{blue}\frac{\partial p_i}{\partial z_i}}}_{\text{when }j=i} +
+\underbrace{{\color{red}\frac{\partial L}{\partial p_i}} \cdot {\color{blue}\frac{\partial p_i}{\partial z_i}}}_{\text{when }j=i} +
 \underbrace{\sum_{j \neq i}{\color{red}\frac{\partial L}{\partial p_j}} \cdot {\color{blue}\frac{\partial p_j}{\partial z_i}}}_{\text{when }j \neq i} \tag{23}
 $$
 
 Substituting our derived values from equations (6), (15), and (20):
 
 $$
-= \underbrace{\vphantom{\sum_{j \neq i}}{\color{red}\left(-\frac{y_i}{p_i}\right)} \cdot {\color{blue}p_i(1-p_i)}}_{\text{diagonal term}} + 
+= \underbrace{{\color{red}\left(-\frac{y_i}{p_i}\right)} \cdot {\color{blue}p_i(1-p_i)}}_{\text{diagonal term}} + 
 \underbrace{\sum_{j \neq i}{\color{red}\left(-\frac{y_j}{p_j}\right)} \cdot {\color{blue}(-p_j \cdot p_i)}}_{\text{off-diagonal terms}} \tag{24}
 $$
 
@@ -301,8 +301,8 @@ $$
 Combining:
 
 $$
-= \underbrace{\vphantom{\sum_{j \neq i}}-y_i + y_i p_i}_{\text{from diagonal}} + 
-\underbrace{\vphantom{\sum_{j \neq i}}\sum_{j \neq i} y_j \cdot p_i}_{\text{from off-diagonal}} \tag{27}
+= \underbrace{-y_i + y_i p_i}_{\text{from diagonal}} + 
+\underbrace{\sum_{j \neq i} y_j \cdot p_i}_{\text{from off-diagonal}} \tag{27}
 $$
 
 $$
@@ -329,9 +329,9 @@ $$
 
 $$
 \boxed{
-\underbrace{\vphantom{\frac{\partial L}{\partial z_i}}\frac{\partial L}{\partial z_i}}_{\text{gradient}} = 
-\underbrace{\vphantom{\frac{\partial L}{\partial z_i}}p_i}_{\text{predicted}} - 
-\underbrace{\vphantom{\frac{\partial L}{\partial z_i}}y_i}_{\text{true}}
+\underbrace{\frac{\partial L}{\partial z_i}}_{\text{gradient}} = 
+\underbrace{p_i}_{\text{predicted}} - 
+\underbrace{y_i}_{\text{true}}
 } \tag{32}
 $$
 
