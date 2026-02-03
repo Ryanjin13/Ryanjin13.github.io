@@ -14,10 +14,10 @@ draft: false
 In the final stage of a classification neural network, the output flows through three sequential transformations:
 
 $$
-\underbrace{\vphantom{\frac{A^{A}}{B}}\text{Neural Network}}_{\text{feature extraction}} \longrightarrow
-\underbrace{\vphantom{\frac{A^{A}}{B}}z_i}_{\text{logits}} \longrightarrow
-\underbrace{\vphantom{\frac{A^{A}}{B}}p_i}_{\text{softmax}} \longrightarrow
-\underbrace{\vphantom{\frac{A^{A}}{B}}L}_{\text{cross entropy}}
+\underbrace{\text{Neural Network}}_{\text{feature extraction}} \longrightarrow
+\underbrace{z_i}_{\text{logits}} \longrightarrow
+\underbrace{p_i}_{\text{softmax}} \longrightarrow
+\underbrace{L}_{\text{cross entropy}}
 $$
 
 Each stage has a specific role:
