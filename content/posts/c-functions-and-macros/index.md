@@ -134,9 +134,107 @@ static void private_func(void) {}  // only callable inside sensor.c
 
 ---
 
-## 4. `#define` and Macros
+## 4. C Memory Layout: Where Everything Lives
 
-### 4.1 `#define` = Text Substitution
+Every C program's memory is divided into distinct regions. Here is where each type of variable and function is stored:
+
+```
+ ┌───────────────────────────────────────────────────────────────┐
+ │                    C PROGRAM MEMORY MAP                       │
+ ├───────────────────────────────────────────────────────────────┤
+ │                                                               │
+ │  ┌─────────────────────────────────────────────────────────┐  │
+ │  │  TEXT (Code) Segment                      [Read-Only]   │  │
+ │  │                                                         │  │
+ │  │  • Function code: main(), calibrate(), printf()         │  │
+ │  │  • String literals: "Hello, World!"                     │  │
+ │  │  • const variables (sometimes)                          │  │
+ │  └─────────────────────────────────────────────────────────┘  │
+ │                                                               │
+ │  ┌─────────────────────────────────────────────────────────┐  │
+ │  │  DATA Segment                                           │  │
+ │  │                                                         │  │
+ │  │  Initialized:                                           │  │
+ │  │  • int global_var = 10;          (global)               │  │
+ │  │  • static int count = 5;         (static)               │  │
+ │  │                                                         │  │
+ │  │  Uninitialized (BSS):                                   │  │
+ │  │  • int global_var;               (defaults to 0)        │  │
+ │  │  • static int count;             (defaults to 0)        │  │
+ │  └─────────────────────────────────────────────────────────┘  │
+ │                                                               │
+ │  ┌─────────────────────────────────────────────────────────┐  │
+ │  │  HEAP                                  grows ↓          │  │
+ │  │                                                         │  │
+ │  │  • int *p = malloc(sizeof(int));                        │  │
+ │  │  • char *str = calloc(100, 1);                          │  │
+ │  │  • Must be freed manually: free(p);                     │  │
+ │  │                                                         │  │
+ │  │                        ↓ ↓ ↓                            │  │
+ │  │                    (grows down)                          │  │
+ │  │                                                         │  │
+ │  │                    (grows up)                            │  │
+ │  │                        ↑ ↑ ↑                            │  │
+ │  │                                                         │  │
+ │  │  STACK                                 grows ↑          │  │
+ │  │                                                         │  │
+ │  │  • Local variables: int temperature = 25;               │  │
+ │  │  • Function parameters: int value (copy)                │  │
+ │  │  • Return addresses                                     │  │
+ │  └─────────────────────────────────────────────────────────┘  │
+ │                                                               │
+ └───────────────────────────────────────────────────────────────┘
+```
+
+### Mapping our examples to memory
+
+```c
+int global_count = 0;              // DATA segment (initialized)
+static int file_count = 0;        // DATA segment (static, initialized)
+
+void calibrate(int value) {        // TEXT segment (function code)
+    value = value + 10;            // STACK (local parameter)
+}
+
+int main(void) {                   // TEXT segment (function code)
+    int temperature = 25;          // STACK (local variable)
+    int *p = malloc(sizeof(int));  // p on STACK, *p on HEAP
+    calibrate(temperature);
+    free(p);
+}
+```
+
+```
+  Code                    Where in memory?
+ ──────────────────────  ─────────────────────────────────
+  calibrate() code        TEXT    ← function instructions
+  main() code             TEXT    ← function instructions
+  "Hello, World!"         TEXT    ← string literal
+
+  global_count = 0        DATA    ← global, initialized
+  file_count = 0          DATA    ← static, initialized
+
+  *p (malloc'd data)      HEAP    ← dynamically allocated
+
+  temperature = 25        STACK   ← local variable in main()
+  value = 25              STACK   ← parameter copy in calibrate()
+  p (the pointer itself)  STACK   ← local variable in main()
+```
+
+### Lifetime comparison
+
+| Region | Created | Destroyed | Example |
+|---|---|---|---|
+| **Text** | Program start | Program end | `calibrate()`, `main()` |
+| **Data** | Program start | Program end | `global_count`, `static int` |
+| **Heap** | `malloc()` call | `free()` call | `*p` |
+| **Stack** | Function call | Function return | `temperature`, `value` |
+
+---
+
+## 5. `#define` and Macros
+
+### 5.1 `#define` = Text Substitution
 
 `#define` is **not** a variable. Before the compiler ever sees your code, the **preprocessor** replaces every occurrence with the literal text you defined.
 
@@ -156,7 +254,7 @@ static void private_func(void) {}  // only callable inside sensor.c
          you write this                    compiler sees this
 ```
 
-### 4.2 Conditional Compilation
+### 5.2 Conditional Compilation
 
 Entire blocks of code can be included or excluded **at compile time** based on defined symbols.
 
@@ -201,7 +299,7 @@ You can also switch between configurations:
    └──────────────────────────────────────────────────────┘
 ```
 
-### 4.3 Header Guards
+### 5.3 Header Guards
 
 When multiple files `#include` the same header, its contents could be inserted **more than once**, causing duplicate definition errors. Header guards prevent this.
 
@@ -257,13 +355,14 @@ void sensor_init(Sensor *s);
 
 ---
 
-## 5. Summary
+## 6. Summary
 
 | Concept | Mechanism | Key Takeaway |
 |---|---|---|
 | **Call by value** | Copies the value | Original is safe, function works on a copy |
 | **Call by reference** | Passes the address (`&`) | Function can modify the original via `*` |
 | **`static`** | Limits linkage to current file | Hides internal details from other files |
+| **Memory layout** | Text, Data, Heap, Stack | Know where each variable lives and when it dies |
 | **`#define`** | Text substitution before compile | Not a variable -- just find-and-replace |
 | **Conditional compilation** | `#if` / `#ifdef` / `#ifndef` | Include or exclude code at compile time |
 | **Header guards** | `#ifndef` + `#define` pattern | Prevents duplicate inclusion of headers |
