@@ -1,6 +1,6 @@
 ---
 title: "Stereo Vision Fundamentals: Complete Mathematical Guide"
-date: 2026-02-07
+date: 2026-02-06
 description: "Comprehensive guide to stereo vision mathematics including camera models, epipolar geometry, rectification, and depth estimation"
 categories: ["3D Vision"]
 tags: ["Stereo Vision", "Epipolar Geometry", "Depth Estimation", "Camera Calibration", "Computer Vision"]
