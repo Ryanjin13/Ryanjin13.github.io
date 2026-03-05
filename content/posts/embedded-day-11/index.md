@@ -1,6 +1,6 @@
 ---
 title: "Day 11 — Camera Geometry and Calibration"
-date: 2026-03-16
+date: 2026-03-05T11:00:00
 description: "Pinhole camera model, intrinsic and extrinsic parameters, lens distortion, Zhang's calibration method, homography, and Bird's Eye View transform"
 categories: ["Autonomous Driving"]
 tags: ["Camera Calibration", "Pinhole Model", "Homography", "Bird's Eye View", "OpenCV"]

@@ -1,6 +1,6 @@
 ---
 title: "Day 19 — YOLOv5 Object Detection, Transfer Learning, and Quantization"
-date: 2026-03-05
+date: 2026-03-05T19:00:00
 description: "YOLOv5 architecture deep dive, YOLO metrics, transfer learning strategies, custom dataset training, and INT8 quantization for edge deployment"
 categories: ["Autonomous Driving"]
 tags: ["YOLOv5", "Object Detection", "Transfer Learning", "Quantization", "Edge AI"]

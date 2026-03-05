@@ -1,6 +1,6 @@
 ---
 title: "Day 7 — IMU Sensors and MEMS Principles"
-date: 2026-03-05
+date: 2026-03-05T07:00:00
 description: "MEMS accelerometer and gyroscope working principles, sensor noise models, Allan Variance analysis, and Euler angles vs Quaternions"
 categories: ["Autonomous Driving"]
 tags: ["IMU", "MEMS", "Accelerometer", "Gyroscope", "Allan Variance", "Quaternion"]

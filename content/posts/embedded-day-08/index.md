@@ -1,6 +1,6 @@
 ---
 title: "Day 8 — Kalman Filter: Theory and Implementation"
-date: 2026-03-05
+date: 2026-03-05T08:00:00
 description: "Complete Kalman filter derivation — predict and update steps, Q and R matrices, complementary filter comparison, and EKF introduction for IMU sensor fusion"
 categories: ["Autonomous Driving"]
 tags: ["Kalman Filter", "Sensor Fusion", "EKF", "Complementary Filter", "State Estimation"]

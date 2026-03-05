@@ -1,6 +1,6 @@
 ---
 title: "Day 3 — Electronics Basics, UART Debug Console, and GPIO"
-date: 2026-03-05
+date: 2026-03-05T03:00:00
 description: "Ohm's law, voltage dividers, pull-up/pull-down resistors, RPi 5 power design, and UART debug console access"
 categories: ["Autonomous Driving"]
 tags: ["Electronics", "UART", "GPIO", "Voltage Divider", "Debug Console"]

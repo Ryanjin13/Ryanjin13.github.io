@@ -1,6 +1,6 @@
 ---
 title: "Day 13 — ROS2 Architecture: DDS, QoS, and Message Types"
-date: 2026-03-05
+date: 2026-03-05T13:00:00
 description: "ROS1 to ROS2 evolution, DDS middleware with RTPS protocol, QoS policies for robotics, and Node/Topic/Service/Action/Parameter concepts"
 categories: ["Autonomous Driving"]
 tags: ["ROS2", "DDS", "QoS", "RTPS", "Lifecycle Node"]
