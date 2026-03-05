@@ -1,6 +1,6 @@
 ---
 title: "Day 9 — PID Control and Encoder Feedback Loop"
-date: 2026-03-06
+date: 2026-03-05
 description: "Feedback control systems, P/I/D terms physical meaning, Ziegler-Nichols tuning, integral windup, derivative kick solutions, and velocity PID with Hall encoder"
 categories: ["Autonomous Driving"]
 tags: ["PID Control", "Feedback Control", "Motor Control", "Tuning", "Anti-windup"]

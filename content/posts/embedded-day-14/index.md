@@ -1,6 +1,6 @@
 ---
 title: "Day 14 — ROS2 Executor Model and Concurrency Patterns"
-date: 2026-03-06
+date: 2026-03-05
 description: "TF2 coordinate transforms, executor threading models, callback groups, intra-process communication, and debugging tools for ROS2 robotics"
 categories: ["Autonomous Driving"]
 tags: ["ROS2", "TF2", "Executor", "Callback Groups", "Concurrency"]

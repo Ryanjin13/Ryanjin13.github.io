@@ -1,6 +1,6 @@
 ---
 title: "Day 1 — Raspberry Pi 5 and ARM Architecture"
-date: 2026-03-06
+date: 2026-03-05
 description: "Understanding embedded systems fundamentals: MCU vs MPU vs SoC, RPi 5 architecture with BCM2712, ARM Cortex-A76 pipeline, and GPIO through RP1 southbridge"
 categories: ["Autonomous Driving"]
 tags: ["Raspberry Pi", "ARM", "Embedded Systems", "GPIO", "BCM2712"]

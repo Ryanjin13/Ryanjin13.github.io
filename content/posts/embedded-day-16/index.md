@@ -1,6 +1,6 @@
 ---
 title: "Day 16 — Team Code Review and Architecture Presentation"
-date: 2026-03-06
+date: 2026-03-05
 description: "Full-day team presentations analyzing the Hawonder vehicle codebase — motor driver, camera pipeline, sensor nodes, and launch file architecture"
 categories: ["Autonomous Driving"]
 tags: ["Code Review", "ROS2", "System Architecture", "Team Presentation"]

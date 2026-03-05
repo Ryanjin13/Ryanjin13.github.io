@@ -1,6 +1,6 @@
 ---
 title: "Day 6 — Motor Fundamentals and Hall Sensor Encoders"
-date: 2026-03-06
+date: 2026-03-05
 description: "Lorentz force in DC motors, BLDC 3-phase electronic commutation, H-bridge PWM control, and Hall effect encoder for speed measurement"
 categories: ["Autonomous Driving"]
 tags: ["DC Motor", "BLDC", "Hall Sensor", "Encoder", "PWM", "H-Bridge"]

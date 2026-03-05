@@ -1,6 +1,6 @@
 ---
 title: "Day 10 — 1D LiDAR and Depth Cameras: ToF and Structured Light"
-date: 2026-03-06
+date: 2026-03-05
 description: "Time-of-Flight distance measurement, phase-shift method, triangulation, structured light depth cameras, and comparing depth sensing technologies"
 categories: ["Autonomous Driving"]
 tags: ["LiDAR", "Depth Camera", "ToF", "Structured Light", "Distance Sensing"]

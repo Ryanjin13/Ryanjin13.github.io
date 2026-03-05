@@ -1,6 +1,6 @@
 ---
 title: "Day 20 — Hailo-10 NPU and Final Integration Demo"
-date: 2026-03-06
+date: 2026-03-05
 description: "Hailo-10 dataflow architecture, compilation pipeline from PyTorch to .hef, HailoRT inference, and complete autonomous car integration demo"
 categories: ["Autonomous Driving"]
 tags: ["Hailo", "NPU", "Edge AI", "Integration", "Autonomous Driving"]

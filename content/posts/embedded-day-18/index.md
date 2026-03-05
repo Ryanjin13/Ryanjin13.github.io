@@ -1,6 +1,6 @@
 ---
 title: "Day 18 — Lane Detection ROS2 Integration, Sensor Fusion, and Safety Design"
-date: 2026-03-06
+date: 2026-03-05
 description: "Packaging vision pipeline as ROS2 node, multi-sensor fusion architecture, watchdog timers, emergency stop logic, and fail-safe state machines"
 categories: ["Autonomous Driving"]
 tags: ["Sensor Fusion", "ROS2", "Safety", "Watchdog", "State Machine", "Lane Detection"]

@@ -1,6 +1,6 @@
 ---
 title: "Day 17 — OpenCV Fundamentals and Lane Detection Pipeline"
-date: 2026-03-06
+date: 2026-03-05
 description: "Color space conversion, thresholding, morphological operations, Canny edge detection, Hough transform, BEV perspective transform, and sliding window lane detection"
 categories: ["Autonomous Driving"]
 tags: ["OpenCV", "Lane Detection", "Canny Edge", "Hough Transform", "Bird's Eye View"]
