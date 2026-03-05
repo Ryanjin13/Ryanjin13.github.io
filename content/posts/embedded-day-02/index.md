@@ -1,6 +1,6 @@
 ---
 title: "Day 2 — Linux Fundamentals and Boot Sequence"
-date: 2026-03-07
+date: 2026-03-06
 description: "RPi 5 boot sequence from EEPROM to systemd, filesystem hierarchy, process model, and shell scripting essentials"
 categories: ["Autonomous Driving"]
 tags: ["Linux", "Boot Sequence", "systemd", "Process Management", "Shell Scripting"]

@@ -1,6 +1,6 @@
 ---
 title: "Day 12 — SLAM: Simultaneous Localization and Mapping"
-date: 2026-03-17
+date: 2026-03-06
 description: "The SLAM problem, visual odometry, feature extraction, pose graph optimization, loop closure, occupancy grids, and RTAB-Map on Raspberry Pi 5"
 categories: ["Autonomous Driving"]
 tags: ["SLAM", "RTAB-Map", "Visual Odometry", "Loop Closure", "Occupancy Grid"]

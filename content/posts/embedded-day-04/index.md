@@ -1,6 +1,6 @@
 ---
 title: "Day 4 — Communication Protocols: UART, SPI, I2C, CAN, and USB"
-date: 2026-03-09
+date: 2026-03-06
 description: "Deep dive into embedded communication protocols — framing, clock modes, addressing, differential signaling, and signal debugging with logic analyzers"
 categories: ["Autonomous Driving"]
 tags: ["UART", "SPI", "I2C", "CAN", "USB", "Communication Protocols"]

@@ -1,6 +1,6 @@
 ---
 title: "Day 15 — ros2_control, Nav2, and First Vehicle Setup"
-date: 2026-03-20
+date: 2026-03-06
 description: "ros2_control framework with diff_drive_controller, Nav2 navigation stack architecture, URDF/XACRO basics, and first vehicle kit setup"
 categories: ["Autonomous Driving"]
 tags: ["ros2_control", "Nav2", "URDF", "Navigation", "Costmap"]

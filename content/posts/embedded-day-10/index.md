@@ -1,6 +1,6 @@
 ---
 title: "Day 10 — 1D LiDAR and Depth Cameras: ToF and Structured Light"
-date: 2026-03-15
+date: 2026-03-06
 description: "Time-of-Flight distance measurement, phase-shift method, triangulation, structured light depth cameras, and comparing depth sensing technologies"
 categories: ["Autonomous Driving"]
 tags: ["LiDAR", "Depth Camera", "ToF", "Structured Light", "Distance Sensing"]
@@ -13,368 +13,1274 @@ draft: false
 
 ## What You'll Learn
 
-- Three methods of distance measurement: pulse ToF, phase-shift, and triangulation
-- How structured light and ToF depth cameras extend 1D sensing to full depth maps
-- Noise characteristics and failure modes of each technology
-- Filtering distance data with moving average and Kalman filter (Day 8 callback)
-- Practical Python code for reading LiDAR and depth camera data
+In Day 9 we built a PID controller that can track a velocity setpoint. But a speed controller alone is useless if the car cannot perceive its environment. Today we add the first perception sensors: **1D LiDAR** for point distance measurement and **depth cameras** for full 2D depth maps.
+
+By the end of this post you will be able to:
+
+1. Explain how Time-of-Flight (ToF) distance measurement works with pulse timing and phase-shift methods.
+2. Derive the maximum unambiguous range of a phase-shift sensor.
+3. Describe the triangulation principle used by Sharp IR sensors.
+4. Understand how **structured light** depth cameras project IR patterns to compute depth.
+5. Understand how **ToF depth cameras** extend 1D ToF to a full pixel array.
+6. Compare structured light vs ToF depth cameras and know when to use each.
+7. Filter noisy LiDAR data using a moving average and a Kalman filter (connecting to Day 8).
+8. Visualize depth camera output with Python and OpenCV.
 
 ---
 
-## 1. 1D LiDAR — Pulse Time-of-Flight
+## 1. Distance Sensing Overview
 
-### Principle
+An autonomous car needs to know "how far is that object?" There are three fundamental physics principles used in distance sensing:
 
-Send a laser pulse, measure the time until the reflection returns:
+| Method | Principle | Typical sensor |
+|--------|-----------|---------------|
+| Pulse ToF | Measure round-trip time of light pulse | TFmini, VL53L0X |
+| Phase-shift ToF | Measure phase difference of modulated light | VL53L5CX, ToF cameras |
+| Triangulation | Measure angle/displacement of reflected beam | Sharp GP2Y0A21, structured light cameras |
 
-$$d = \frac{c \cdot t_{round\text{-}trip}}{2}$$
-
-Where \(c = 3 \times 10^8\) m/s (speed of light) and the factor of 2 accounts for the round trip.
-
-```
-  Sensor                                  Target
-  ┌──────┐        Laser pulse            ┌──────┐
-  │ TX ──├─────────────────────────────►  │      │
-  │      │                                │      │
-  │ RX ◄─├─────────────────────────────── │      │
-  └──────┘        Reflected pulse         └──────┘
-           ◄──────── d ────────►
-
-  t_roundtrip measured by high-speed timer
-  d = c × t / 2
-```
-
-**Example**: Object at 1.5m:
-
-$$t = \frac{2 \times 1.5}{3 \times 10^8} = 10 \text{ ns}$$
-
-Measuring 10 nanoseconds accurately requires a timer resolution of ~1 ns, which is achievable with modern TDC (Time-to-Digital Converter) circuits.
+All three are forms of **active sensing**: the sensor emits its own signal (IR laser or LED) rather than relying on ambient light. This is a crucial distinction from passive cameras that depend on scene illumination.
 
 ---
 
-## 2. Phase-Shift Method
+## 2. 1D LiDAR: Pulse Time-of-Flight
 
-### Principle
+### 2.1 Basic Principle
 
-Instead of measuring time directly, modulate the laser at a known frequency and measure the **phase difference** between transmitted and received signals:
+A pulse ToF sensor fires a short laser pulse and starts a timer. The pulse reflects off the target and returns to the detector. The distance is:
 
-$$d = \frac{c \cdot \varphi}{4\pi f_{mod}}$$
+$$
+d = \frac{c \cdot t_{\text{round-trip}}}{2}
+$$
 
-Where:
-- \(\varphi\) = measured phase shift (radians)
-- \(f_{mod}\) = modulation frequency
+where \(c \approx 3 \times 10^8\) m/s is the speed of light and the factor of 2 accounts for the round trip.
 
-### Maximum Unambiguous Range
+```
+  Sensor                          Target
+  ┌──────┐     Laser pulse       ┌──────┐
+  │ TX ──├──────────────────────►│      │
+  │      │                       │      │
+  │ RX ◄─├──────────────────────│      │
+  └──────┘     Reflected pulse   └──────┘
+         ◄──────── d ────────►
 
-Phase wraps around at \(2\pi\), so:
+  t_start ─────────────────── t_return
+          t_round_trip = t_return - t_start
+```
 
-$$d_{max} = \frac{c}{2 f_{mod}}$$
+### 2.2 Practical Numbers
 
-| Modulation Frequency | Max Range |
-|---------------------|-----------|
+Light travels 30 cm in 1 nanosecond. For a 3-meter distance:
+
+$$
+t = \frac{2d}{c} = \frac{2 \times 3}{3 \times 10^8} = 20 \text{ ns}
+$$
+
+Measuring 20 ns accurately requires high-speed electronics. This is why consumer 1D LiDAR modules (like TFmini-Plus) use specialized **time-to-digital converters (TDC)** or correlators rather than raw timers. A TDC can achieve sub-nanosecond resolution using delay-locked loops and vernier techniques.
+
+### 2.3 Signal-to-Noise Ratio
+
+The return signal strength follows the **LiDAR equation**:
+
+$$
+P_r = P_t \cdot \frac{\rho \cdot A_r}{d^2} \cdot \eta_{\text{atm}} \cdot \eta_{\text{opt}}
+$$
+
+where:
+- \(P_t\) is the transmitted power,
+- \(\rho\) is the target reflectivity,
+- \(A_r\) is the receiver aperture area,
+- \(d\) is the distance,
+- \(\eta_{\text{atm}}\) and \(\eta_{\text{opt}}\) are atmospheric and optical efficiencies.
+
+The key takeaway: return power drops with \(d^2\), so noise increases significantly at longer ranges.
+
+### 2.4 Typical Module Specifications
+
+For a typical module like TFmini-Plus:
+
+| Parameter | Value |
+|-----------|-------|
+| Range | 0.1 -- 12 m |
+| Resolution | 1 cm |
+| Accuracy | \(\pm 1\%\) at short range |
+| Update rate | 100 -- 1000 Hz |
+| Wavelength | 850 nm (near-IR) |
+| Interface | UART (115200 baud) |
+| Frame format | 9 bytes: 0x59, 0x59, dist_lo, dist_hi, str_lo, str_hi, temp_lo, temp_hi, checksum |
+
+---
+
+## 3. Phase-Shift Time-of-Flight
+
+### 3.1 Principle
+
+Instead of a single pulse, the sensor emits **continuously modulated** light — typically a sinusoidal intensity modulation at frequency \(f_{\text{mod}}\). The reflected signal has the same frequency but is shifted in phase by \(\phi\):
+
+$$
+\phi = 2\pi f_{\text{mod}} \cdot t_{\text{round-trip}} = 2\pi f_{\text{mod}} \cdot \frac{2d}{c}
+$$
+
+Solving for distance:
+
+$$
+\boxed{d = \frac{c \cdot \phi}{4\pi f_{\text{mod}}}}
+$$
+
+```
+Emitted:   ────/\──/\──/\──/\──/\──>  (frequency f_mod)
+
+Received:  ──────/\──/\──/\──/\──/\─  (same f, phase shifted by phi)
+
+           |<--->|
+            phi = phase difference proportional to distance
+```
+
+### 3.2 Maximum Unambiguous Range
+
+The phase \(\phi\) can only be measured modulo \(2\pi\). When \(\phi = 2\pi\), the sensor cannot distinguish it from \(\phi = 0\). This gives the maximum unambiguous range:
+
+$$
+d_{\max} = \frac{c}{2 f_{\text{mod}}}
+$$
+
+| Modulation Frequency | Max Unambiguous Range |
+|---------------------|----------------------|
 | 10 MHz | 15.0 m |
+| 20 MHz | 7.5 m |
 | 30 MHz | 5.0 m |
 | 100 MHz | 1.5 m |
 
-**Trade-off**: Higher frequency → better precision, lower range. Many sensors use multiple modulation frequencies to extend range while maintaining precision.
+For \(f_{\text{mod}} = 20\) MHz:
+
+$$
+d_{\max} = \frac{3 \times 10^8}{2 \times 20 \times 10^6} = 7.5 \text{ m}
+$$
+
+To extend range, lower the modulation frequency — but this reduces depth resolution. Some sensors use **dual-frequency** modulation to get both range and resolution:
+
+$$
+d_{\max,\text{effective}} = \frac{c}{2 \cdot \gcd(f_1, f_2)}
+$$
+
+### 3.3 Depth Resolution
+
+The depth resolution depends on how precisely we can measure the phase. For a phase noise of \(\sigma_\phi\):
+
+$$
+\sigma_d = \frac{c}{4\pi f_{\text{mod}}} \cdot \sigma_\phi
+$$
+
+Higher modulation frequency gives better depth resolution but shorter max range. This is the fundamental tradeoff in phase-shift ToF design.
+
+### 3.4 Four-Bucket Sampling
+
+In practice, the phase is measured by sampling the return signal at four equally spaced phase offsets (0, \(\pi/2\), \(\pi\), \(3\pi/2\)):
+
+$$
+\phi = \arctan\!\left(\frac{S_3 - S_1}{S_0 - S_2}\right)
+$$
+
+where \(S_0, S_1, S_2, S_3\) are the integrated signal at each phase offset. This technique is called **four-bucket demodulation** and is the basis of most ToF sensor pixels.
+
+The amplitude (signal quality indicator):
+
+$$
+A = \frac{1}{2}\sqrt{(S_0 - S_2)^2 + (S_1 - S_3)^2}
+$$
+
+Low amplitude means unreliable depth — this serves as a confidence metric.
 
 ---
 
-## 3. Triangulation (IR)
+## 4. Triangulation (Sharp IR Sensor)
 
-### Principle
+### 4.1 Principle
 
-An IR LED projects a spot onto the target. A position-sensitive detector (PSD) measures where the reflected spot lands:
+A triangulation sensor uses geometry rather than time. An IR LED emits a beam at an angle. The beam hits the target and reflects back to a position-sensitive detector (PSD). The position of the reflected spot on the detector changes with distance:
 
 ```
-  IR LED ──────── light ────────► Target
-    ╲                              │
-     ╲                             │ reflected
-      ╲ baseline (b)               │
-       ╲                           │
-  PSD ◄──────── reflected spot ────┘
-   │
-   └── spot position on PSD ∝ 1/distance
+        LED
+        /│\
+       / │ \     beam
+      /  │  \────────────> Target at distance d1
+     /   │   \
+    /    │    \──────────────────> Target at distance d2
+   /     │
+  PSD    │ baseline b
+  ┌──────┤
+  │ x1   │     (spot position moves with distance)
+  │  x2  │
+  └──────┘
 ```
 
-$$d = \frac{f \cdot b}{\Delta x}$$
+By similar triangles:
 
-Where \(f\) = lens focal length, \(b\) = baseline distance, \(\Delta x\) = spot displacement on PSD.
+$$
+d = \frac{b \cdot f}{x}
+$$
 
-**Examples**: Sharp GP2Y0A21 (10-80 cm), cheap and simple but low accuracy at long range.
+where \(b\) is the baseline distance between LED and PSD, \(f\) is the focal length of the receiving lens, and \(x\) is the position of the spot on the PSD.
+
+### 4.2 Nonlinear Output
+
+The relationship \(d \propto 1/x\) means the output voltage vs distance curve is **hyperbolic**, not linear. At long range, small changes in distance produce tiny changes in voltage — resolution degrades rapidly. This is why Sharp sensors are best at close range (10-80 cm).
+
+The voltage-to-distance conversion is typically:
+
+$$
+d \approx \frac{a}{V - b}
+$$
+
+where \(a\) and \(b\) are calibration constants specific to each sensor model.
+
+### 4.3 Limitations
+
+| Limitation | Cause |
+|-----------|-------|
+| Short range (< 1 m) | Inverse relationship degrades resolution at distance |
+| Blind spot (< 10 cm) | Objects too close: reflected spot falls outside PSD |
+| Angular dependency | Specular surfaces reflect beam away from detector |
+| Slow response (25-40 ms) | PSD integration time |
+| Color dependency | Dark surfaces absorb more IR, reducing return signal |
 
 ---
 
-## 4. Noise and Failure Modes
+## 5. Noise Sources in Distance Sensors
 
-| Issue | Cause | Affected Sensors |
-|-------|-------|-----------------|
-| Black surfaces | Low reflectivity → weak return | All |
-| Glass/mirrors | Specular reflection (bounces away) | All |
-| Minimum distance | Overlap of TX/RX optics | ToF, Phase-shift |
-| Temperature drift | Electronics change with temperature | All |
-| Multipath | Signal bounces off multiple surfaces | Phase-shift, ToF |
-| Ambient light | Sunlight overwhelms return signal | IR triangulation |
+All distance sensors suffer from noise. Understanding the sources helps you design filters (connecting to Day 8).
+
+### 5.1 Common Noise Sources
+
+| Source | Effect | Mitigation |
+|--------|--------|-----------|
+| **Black surfaces** | Absorb IR, weak return signal, noisy or no reading | Increase laser power, use averaging |
+| **Glass/transparent objects** | Beam passes through, measures wall behind glass | Cannot be fixed optically; use ultrasonic backup |
+| **Sunlight** | Saturates IR detector, especially outdoors | Use narrow bandpass filter at sensor wavelength |
+| **Multipath** | Signal bounces off multiple surfaces before return | Phase unwrapping algorithms, multi-frequency |
+| **Temperature drift** | Electronic component values shift | Onboard calibration, temperature compensation |
+| **Motion blur** | Object moves during measurement | Higher sample rate, predictive filtering |
+| **Crosstalk** | Multiple sensors interfere with each other | Time-division multiplexing, unique modulation codes |
+
+### 5.2 Noise Model
+
+For most 1D LiDAR sensors, the measurement noise is approximately Gaussian with distance-dependent variance:
+
+$$
+z[k] = d_{\text{true}} + v[k], \qquad v[k] \sim \mathcal{N}(0, \sigma^2(d))
+$$
+
+where \(\sigma(d)\) increases with distance (weaker return signal means more noise). For the TFmini-Plus at indoor ranges, \(\sigma \approx 1\text{--}3\) cm is typical.
+
+The signal strength reading provides a direct indicator of measurement quality. A common rule:
+
+$$
+\text{confidence} = \begin{cases}
+\text{high} & \text{if strength} > 100 \\
+\text{medium} & \text{if } 20 < \text{strength} \leq 100 \\
+\text{low} & \text{if strength} \leq 20
+\end{cases}
+$$
 
 ---
 
-## 5. Depth Cameras
+## 6. Structured Light Depth Camera
 
-### Structured Light
+### 6.1 Concept: From 1D to 2D
 
-A projector sends a known IR pattern (dots, stripes, or grid) onto the scene. An IR camera observes how the pattern deforms:
+A 1D LiDAR gives a single distance value per measurement. A depth camera produces a complete **depth map** — distance for every pixel. There are two main technologies: structured light and ToF arrays.
+
+### 6.2 How Structured Light Works
+
+A structured light camera (e.g., Intel RealSense D435, original Kinect) projects a known **IR pattern** (dots, stripes, or speckle) onto the scene. An IR camera observes the pattern deformation.
 
 ```
-  IR Projector          Scene              IR Camera
-  ┌──────────┐                            ┌──────────┐
-  │ ● ● ● ● │──── known pattern ────►    │ captures │
-  │ ● ● ● ● │                    ╱╲      │ deformed │
-  │ ● ● ● ● │              object  ╲     │ pattern  │
-  └──────────┘                       ╲    └──────────┘
-       ◄────── baseline ──────►
+  IR Projector          Scene            IR Camera
+  ┌──────────┐                          ┌──────────┐
+  │ . . . .  │──── known pattern ──────>│ captures  │
+  │ . . . .  │                   ╱╲     │ deformed  │
+  │ . . . .  │            object   ╲    │ pattern   │
+  └──────────┘                      ╲   └──────────┘
+       ◄────── baseline b ──────►
 
   Pattern deformation → triangulation → depth per pixel
 ```
 
-- **Near range**: Excellent precision (sub-mm at <1m)
-- **Far range**: Pattern becomes too spread out, precision drops
-- **Sunlight**: IR pattern washed out outdoors
+**Step 1**: The projector emits a known dot or speckle pattern using an IR laser or LED.
 
-**Examples**: Intel RealSense SR305 (structured light), RealSense D435 (active IR stereo)
+**Step 2**: The IR camera captures the pattern as it appears on surfaces in the scene.
 
-### ToF Depth Camera (Phase-Shift Array)
+**Step 3**: For each dot (or correlation window), the system finds the **disparity** — how much the dot has shifted compared to where it would appear on a flat reference surface at a known distance.
 
-Extend the 1D phase-shift concept to a **2D pixel array**. Each pixel independently measures the phase shift of modulated IR light:
+**Step 4**: Using triangulation (the same principle as stereo vision), compute depth:
 
-$$\text{1D LiDAR ToF extended to 2D pixel array} = \text{Depth Camera}$$
+$$
+d = \frac{b \cdot f}{\text{disparity}}
+$$
 
-- **Frame rate**: 30-60 FPS typically
-- **Resolution**: 320×240 to 640×480 (lower than RGB cameras)
-- **Range**: 0.2m to 10m
-- **Sunlight**: Better than structured light (modulated signal filtering)
+where \(b\) is the projector-camera baseline and \(f\) is the focal length in pixels.
 
-**Examples**: PMD/Infineon sensors, Microsoft Azure Kinect (ToF mode)
+### 6.3 Disparity and Depth Resolution
 
-### Comparison
+Since \(d = bf / \text{disparity}\), the depth resolution depends on the disparity resolution \(\delta_{\text{disp}}\):
 
-| Feature | Structured Light | ToF Depth Camera |
-|---------|-----------------|-----------------|
-| Near-range precision | Excellent | Good |
-| Far range | Degrades quickly | Better |
-| Outdoor (sunlight) | Poor | Moderate |
-| Frame rate | 30 FPS typical | 30-60 FPS |
-| Power consumption | Lower | Higher |
-| Multipath artifacts | Less susceptible | More susceptible |
-| Resolution | Higher (up to 1280×720) | Lower (320×240 typical) |
+$$
+\delta_d = \frac{d^2}{b \cdot f} \cdot \delta_{\text{disp}}
+$$
 
-### Common Weaknesses
+This means depth resolution **degrades quadratically** with distance. At 1 m with sub-pixel disparity, you get millimeter-level depth. At 5 m, the resolution drops to centimeters.
 
-Both types struggle with:
-- **Direct sunlight**: IR interference
-- **Transparent objects**: IR passes through glass
-- **Multipath interference**: IR bounces off multiple surfaces
-- **Very dark surfaces**: Low reflectivity
-- **Edges**: Depth discontinuities cause mixed pixels (flying pixels)
+### 6.4 Structured Light Characteristics
+
+| Property | Value (typical D435) |
+|----------|---------------------|
+| Resolution | 1280 x 720 |
+| Depth range | 0.1 -- 10 m |
+| Accuracy | < 2% at 2 m |
+| Frame rate | 30 -- 90 fps |
+| Baseline | ~55 mm |
+| Principle | Active IR stereo with structured light assist |
+
+### 6.5 Strengths and Weaknesses
+
+**Strengths**: works well indoors, high resolution, good at texture-less surfaces (the projected pattern provides artificial texture), mature software ecosystem.
+
+**Weaknesses**: sunlight washes out IR pattern (poor outdoor performance), accuracy degrades with \(d^2\) (because disparity resolution is fixed), power-hungry projector, limited by baseline for minimum range.
 
 ---
 
-## 6. Hands-On Lab
+## 7. Phase-Shift ToF Depth Camera
 
-### Lab 1: 1D LiDAR Real-Time Distance
+### 7.1 Concept
 
-```python
-#!/usr/bin/env python3
-"""Read distance from 1D LiDAR (TFmini/TF-Luna) via UART."""
+A ToF depth camera (e.g., Microsoft Azure Kinect, PMD sensors, Intel RealSense L515) applies the phase-shift ToF principle (Section 3) to every pixel simultaneously.
 
-import serial
-import time
-import struct
-
-ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
-
-print("1D LiDAR distance reading")
-print(f"{'Time':>8s} {'Dist(cm)':>10s} {'Strength':>10s}")
-
-try:
-    while True:
-        # TF-Luna protocol: 9 bytes per frame
-        # Header: 0x59 0x59
-        if ser.read(1) == b'\x59':
-            if ser.read(1) == b'\x59':
-                data = ser.read(7)
-                if len(data) == 7:
-                    dist_cm = struct.unpack('<H', data[0:2])[0]
-                    strength = struct.unpack('<H', data[2:4])[0]
-                    print(f"{'':>8s} {dist_cm:>10d} {strength:>10d}")
-        time.sleep(0.01)
-
-except KeyboardInterrupt:
-    ser.close()
-    print("\nDone.")
+```
+  Modulated              Scene            Sensor Array
+  IR Flood               ┌──────┐        ┌──────────┐
+  ┌───┐                  │      │        │ ░░░░░░░  │
+  │~~~│── modulated IR──>│      │<──────│ ░░░░░░░  │  (each pixel
+  │~~~│   (entire scene) │      │reflect│ ░░░░░░░  │   measures phase)
+  └───┘                  └──────┘        └──────────┘
 ```
 
-### Lab 2: Moving Average vs Kalman Filter
+Each pixel in the sensor array independently measures the phase shift \(\phi\) of the returning modulated light. The depth at pixel \((u, v)\) is:
+
+$$
+d(u, v) = \frac{c \cdot \phi(u, v)}{4\pi f_{\text{mod}}}
+$$
+
+### 7.2 Correlation-Based Phase Measurement
+
+Each pixel uses the four-bucket sampling technique from Section 3.4:
+
+$$
+\phi(u,v) = \arctan\!\left(\frac{S_{3}(u,v) - S_{1}(u,v)}{S_0(u,v) - S_{2}(u,v)}\right)
+$$
+
+The amplitude at each pixel indicates measurement reliability:
+
+$$
+A(u,v) = \frac{1}{2}\sqrt{(S_0 - S_2)^2 + (S_1 - S_3)^2}
+$$
+
+Low amplitude means unreliable depth — pixels with \(A < A_{\text{threshold}}\) are typically masked out in the depth map.
+
+### 7.3 ToF Camera Characteristics
+
+| Property | Value (typical) |
+|----------|----------------|
+| Resolution | 320 x 240 -- 640 x 480 |
+| Depth range | 0.1 -- 5 m (indoor) |
+| Accuracy | 1 -- 2 cm |
+| Frame rate | 30 -- 60 fps |
+| Max range | Limited by \(f_{\text{mod}}\) |
+| Power consumption | Moderate (flood illumination) |
+
+### 7.4 Multipath Interference
+
+ToF cameras are particularly susceptible to multipath. When light bounces off multiple surfaces before reaching the sensor, the measured phase is a weighted average of multiple distances:
+
+```
+  Sensor ──── direct path (d1) ─────────── Wall
+    │                                        │
+    │                                        │
+    └──── indirect path (d1 + d2) ── Floor ──┘
+              (multipath)
+
+  Measured phase = weighted mix of phi(d1) and phi(d1+d2)
+  → Incorrect depth reading
+```
+
+**Mitigation**: multi-frequency modulation, computational multipath correction, or switching to structured light in affected areas.
+
+---
+
+## 8. Key Insight: 1D LiDAR to Depth Camera
+
+The connection between the technologies is beautifully simple. Understand this and the entire landscape of depth sensing clicks into place:
+
+```
+1D LiDAR (single point)
+    │
+    │  Extend to 2D scanning (rotating mirror)
+    ▼
+2D LiDAR (e.g., RPLiDAR — a ring of distance points)
+    │
+    │  Replace mechanical scanning with pixel array
+    ▼
+ToF Depth Camera (every pixel measures ToF independently)
+```
+
+And structured light cameras are the "triangulation version" of this extension:
+
+```
+Sharp IR Sensor (single point triangulation)
+    │
+    │  Project a pattern of thousands of points
+    ▼
+Structured Light Depth Camera (triangulation per dot/correlation window)
+```
+
+**The fundamental physics does not change — only the parallelism of measurement.**
+
+A 2D scanning LiDAR like RPLiDAR measures 360 points per revolution by mechanically spinning a 1D ToF sensor. A ToF depth camera achieves the equivalent of thousands of simultaneous 1D measurements by replacing the spinning mechanism with a pixel array, each pixel acting as an independent phase-shift ToF sensor.
+
+---
+
+## 9. Structured Light vs ToF Comparison
+
+| Feature | Structured Light | ToF Camera |
+|---------|-----------------|------------|
+| **Depth principle** | Triangulation (disparity) | Phase shift |
+| **Range** | 0.1 -- 10 m | 0.1 -- 5 m |
+| **Resolution** | Higher (up to 1280x720) | Lower (typically 320x240) |
+| **Accuracy at close range** | Excellent (sub-mm) | Good (cm-level) |
+| **Accuracy vs distance** | Degrades with \(d^2\) | Roughly constant |
+| **Outdoor performance** | Poor (sunlight washes pattern) | Better but still affected |
+| **Multipath** | Minimal (disparity-based) | Significant (corrupts phase) |
+| **Power consumption** | Higher (projector) | Moderate (flood illumination) |
+| **Latency** | Higher (correlation computation) | Lower (per-pixel measurement) |
+| **Cost** | Lower | Higher |
+| **Multi-sensor interference** | Low | Can interfere if same \(f_{\text{mod}}\) |
+| **Edge artifacts** | Flying pixels at depth discontinuities | Mixed pixels at boundaries |
+
+**For our autonomous car project**: we use an Intel RealSense D435 (structured light + active IR stereo) because it has good indoor performance, reasonable range, and excellent software support through the `pyrealsense2` library.
+
+---
+
+## 10. Common Weaknesses of All Depth Sensors
+
+### 10.1 Sunlight Interference
+
+Both structured light and ToF sensors use near-IR wavelengths (typically 850 nm or 940 nm). Sunlight contains strong near-IR components that saturate the detector.
+
+**Mitigation strategies**:
+- Use narrow bandpass optical filters centered on the emitter wavelength
+- Increase emitter power (limited by eye safety regulations: IEC 60825)
+- Use 940 nm wavelength (where solar radiation has a dip due to atmospheric water absorption)
+- Reduce exposure time and increase modulation frequency
+
+### 10.2 Multipath Interference
+
+In concave geometries (corners, bowls), light bounces between surfaces before returning to the sensor:
+
+```
+  Sensor ──── direct path ───────── Wall
+    │                                 │
+    │                                 │
+    └──── indirect path ── Floor ─────┘
+              (multipath)
+
+  ToF sensor measures average of both paths → incorrect depth
+```
+
+**Mitigation**: multi-frequency modulation allows separation of direct and indirect components, though this reduces frame rate.
+
+### 10.3 Transparent and Specular Objects
+
+Glass windows let IR pass through (ToF measures the wall behind the glass). Mirrors reflect IR at the specular angle (beam never returns to sensor). Shiny metal surfaces create mixed reflections.
+
+```
+  Sensor ──── IR beam ──────► Glass Window ──────► Actual wall
+                                (passes through)
+  Sensor sees the wall, not the glass!
+
+  Sensor ──── IR beam ──────► Mirror
+                                └──── reflected away (no return)
+  Sensor sees nothing!
+```
+
+**Mitigation**: no good optical fix exists for these cases. Use ultrasonic sensors as backup, or fuse multiple sensor modalities.
+
+### 10.4 Flying Pixels
+
+At depth discontinuities (edges of objects), a single sensor pixel may receive light from both the foreground and background, producing a depth value that belongs to neither:
+
+```
+  Foreground (1m)    Background (3m)
+       │                  │
+       │     Pixel sees   │
+       │  ◄─ both ──►     │
+       │                  │
+  Reports ~2m (incorrect!)
+```
+
+These "flying pixels" appear as a fringe of incorrect depth values around object edges. They must be filtered out before using the depth data for 3D reconstruction.
+
+---
+
+## 11. Hands-On Lab: 1D LiDAR Real-Time Plotting
+
+### 11.1 Reading TFmini-Plus over UART
 
 ```python
-#!/usr/bin/env python3
-"""Compare moving average and Kalman filter for LiDAR smoothing."""
+"""
+tfmini_reader.py
+Read distance from TFmini-Plus 1D LiDAR over UART.
+Works on Raspberry Pi 5 with TFmini-Plus connected to GPIO UART.
+"""
+
+import serial
+import struct
+import time
+
+
+class TFminiPlus:
+    """Driver for TFmini-Plus 1D LiDAR module."""
+
+    HEADER = 0x59
+    FRAME_SIZE = 9
+
+    def __init__(self, port: str = '/dev/ttyAMA0', baudrate: int = 115200):
+        """
+        Args:
+            port: Serial port (RPi 5: /dev/ttyAMA0, USB: /dev/ttyUSB0)
+            baudrate: Communication speed (default 115200 for TFmini-Plus)
+        """
+        self.ser = serial.Serial(port, baudrate, timeout=0.1)
+        self.ser.reset_input_buffer()
+
+    def read_distance(self) -> dict:
+        """
+        Read one distance frame from the sensor.
+
+        TFmini-Plus protocol (9 bytes per frame):
+          Byte 0: 0x59 (header)
+          Byte 1: 0x59 (header)
+          Byte 2: distance low byte
+          Byte 3: distance high byte
+          Byte 4: signal strength low byte
+          Byte 5: signal strength high byte
+          Byte 6: temperature low byte
+          Byte 7: temperature high byte
+          Byte 8: checksum (sum of bytes 0-7, low 8 bits)
+
+        Returns:
+            dict with keys: distance_cm, strength, temperature_C
+            or None if read failed.
+        """
+        # Synchronize to frame header (two 0x59 bytes)
+        while True:
+            byte = self.ser.read(1)
+            if len(byte) == 0:
+                return None
+            if byte[0] == self.HEADER:
+                byte2 = self.ser.read(1)
+                if len(byte2) == 0:
+                    return None
+                if byte2[0] == self.HEADER:
+                    break
+
+        # Read remaining 7 bytes
+        data = self.ser.read(7)
+        if len(data) < 7:
+            return None
+
+        # Parse frame
+        dist_lo, dist_hi = data[0], data[1]
+        str_lo, str_hi = data[2], data[3]
+        temp_lo, temp_hi = data[4], data[5]
+        checksum = data[6]
+
+        # Verify checksum (sum of first 8 bytes, modulo 256)
+        frame = bytes([self.HEADER, self.HEADER]) + data[:6]
+        calc_checksum = sum(frame) & 0xFF
+        if calc_checksum != checksum:
+            return None
+
+        distance_cm = dist_lo + (dist_hi << 8)
+        strength = str_lo + (str_hi << 8)
+        # Temperature: raw value / 8 - 256 gives degrees Celsius
+        temperature = ((temp_lo + (temp_hi << 8)) / 8.0) - 256.0
+
+        return {
+            'distance_cm': distance_cm,
+            'strength': strength,
+            'temperature_C': round(temperature, 1)
+        }
+
+    def close(self):
+        """Release the serial port."""
+        self.ser.close()
+
+
+# --- Quick test ---
+if __name__ == "__main__":
+    lidar = TFminiPlus('/dev/ttyAMA0')
+    try:
+        print(f"{'Time':>8s} {'Dist(cm)':>10s} {'Strength':>10s} {'Temp(C)':>8s}")
+        t_start = time.monotonic()
+        for _ in range(500):
+            result = lidar.read_distance()
+            if result:
+                elapsed = time.monotonic() - t_start
+                print(f"{elapsed:8.2f} {result['distance_cm']:10d} "
+                      f"{result['strength']:10d} {result['temperature_C']:8.1f}")
+            time.sleep(0.01)
+    except KeyboardInterrupt:
+        print("\nStopped by user.")
+    finally:
+        lidar.close()
+```
+
+### 11.2 Real-Time Distance Plot with Scrolling Window
+
+```python
+"""
+lidar_realtime_plot.py
+Real-time scrolling plot of 1D LiDAR distance measurements.
+Uses matplotlib animation for smooth updates.
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import time
+
+
+# --- Simulation mode (replace with TFminiPlus for real hardware) ---
+class FakeLidar:
+    """Simulates a 1D LiDAR with a moving target and realistic noise."""
+    def __init__(self):
+        self.t = 0
+
+    def read_distance(self):
+        self.t += 0.01
+        # Simulated target: sinusoidal motion + step change
+        if self.t < 5:
+            true_dist = 150 + 80 * np.sin(0.5 * self.t)
+        elif self.t < 8:
+            true_dist = 250  # stationary
+        else:
+            true_dist = 100 + 30 * np.sin(1.5 * self.t)
+
+        # Distance-dependent noise (worse at long range)
+        noise_std = 2 + 0.01 * true_dist
+        noise = np.random.normal(0, noise_std)
+
+        # Occasional outlier (1% chance, simulating specular reflection)
+        if np.random.random() < 0.01:
+            noise += np.random.choice([-50, 50, 100])
+
+        return {'distance_cm': max(0, int(true_dist + noise)),
+                'strength': max(10, 1000 - int(true_dist * 2)),
+                'temperature_C': 25.0}
+
+
+# --- Setup ---
+WINDOW_SIZE = 500  # number of points in scrolling window
+distances = np.zeros(WINDOW_SIZE)
+strengths = np.zeros(WINDOW_SIZE)
+
+lidar = FakeLidar()  # Replace with: TFminiPlus('/dev/ttyAMA0')
+
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 6), sharex=True)
+
+line_dist, = ax1.plot([], [], 'b-', linewidth=1)
+ax1.set_xlim(0, WINDOW_SIZE)
+ax1.set_ylim(0, 400)
+ax1.set_ylabel('Distance [cm]')
+ax1.set_title('1D LiDAR Real-Time Distance')
+ax1.grid(True, alpha=0.3)
+
+line_str, = ax2.plot([], [], 'g-', linewidth=1)
+ax2.set_xlim(0, WINDOW_SIZE)
+ax2.set_ylim(0, 1200)
+ax2.set_ylabel('Signal Strength')
+ax2.set_xlabel('Sample')
+ax2.grid(True, alpha=0.3)
+
+
+def update(frame):
+    """Animation callback: read one sample and update plot."""
+    global distances, strengths
+    result = lidar.read_distance()
+    if result:
+        distances = np.roll(distances, -1)
+        distances[-1] = result['distance_cm']
+        strengths = np.roll(strengths, -1)
+        strengths[-1] = result['strength']
+
+        line_dist.set_data(range(WINDOW_SIZE), distances)
+        line_str.set_data(range(WINDOW_SIZE), strengths)
+    return line_dist, line_str
+
+
+ani = animation.FuncAnimation(fig, update, interval=10, blit=True)
+plt.tight_layout()
+plt.show()
+```
+
+### 11.3 Filtering Comparison: Moving Average vs Kalman Filter
+
+This connects directly to Day 8. We compare three approaches on the same noisy LiDAR data:
+
+```python
+"""
+lidar_filter_comparison.py
+Compare raw, moving average, and Kalman filter on 1D LiDAR data.
+Demonstrates why Kalman filtering (Day 8) is superior.
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Simulated noisy LiDAR data
+
+# --- Generate synthetic LiDAR data ---
 np.random.seed(42)
-t = np.arange(0, 10, 0.02)  # 50 Hz
-true_dist = 150 + 30 * np.sin(0.5 * t)  # cm, slow movement
-noise = 5 * np.random.randn(len(t))
-measured = true_dist + noise
+N = 1000
+dt = 0.01
+t = np.arange(N) * dt
 
-# Moving Average (window = 10)
-window = 10
-ma_filtered = np.convolve(measured, np.ones(window)/window, mode='same')
+# True distance: segments with different behaviors
+true_distance = np.piecewise(
+    t,
+    [t < 3, (t >= 3) & (t < 6), t >= 6],
+    [lambda x: 100 + 5 * x,        # slow approach (100 → 115 cm)
+     lambda x: 130.0,               # stationary target
+     lambda x: 130 - 20 * (x - 6)] # moving away
+)
 
-# 1D Kalman Filter (from Day 8)
-kf_filtered = np.zeros(len(t))
-x = measured[0]  # state estimate
-P = 100.0        # uncertainty
-Q = 0.1          # process noise
-R = 25.0         # measurement noise (5^2)
+# Noisy measurement (distance-dependent noise)
+noise_std = 4.0
+measured = true_distance + np.random.normal(0, noise_std, N)
 
-for k in range(len(t)):
-    # Predict (constant model)
-    P_pred = P + Q
+# Add some outliers (5% of samples)
+outlier_mask = np.random.random(N) < 0.05
+measured[outlier_mask] += np.random.choice([-30, 30, 50], size=outlier_mask.sum())
 
-    # Update
-    K = P_pred / (P_pred + R)
-    x = x + K * (measured[k] - x)
-    P = (1 - K) * P_pred
 
-    kf_filtered[k] = x
+# --- Filter 1: Moving Average ---
+def moving_average(data, window=10):
+    """Simple moving average filter."""
+    kernel = np.ones(window) / window
+    filtered = np.convolve(data, kernel, mode='same')
+    return filtered
 
-# Plot comparison
-fig, axes = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
 
-axes[0].plot(t, true_dist, 'g-', linewidth=2, label='True Distance')
-axes[0].plot(t, measured, 'r.', markersize=1, alpha=0.3, label='Raw LiDAR')
-axes[0].plot(t, ma_filtered, 'orange', linewidth=2, label=f'Moving Avg (n={window})')
-axes[0].plot(t, kf_filtered, 'b-', linewidth=2, label='Kalman Filter')
-axes[0].set_ylabel('Distance (cm)')
+ma_filtered = moving_average(measured, window=20)
+
+
+# --- Filter 2: 1D Kalman Filter (from Day 8) ---
+class KalmanFilter1D:
+    """Simple 1D Kalman filter with constant-velocity model."""
+
+    def __init__(self, x0=0.0, v0=0.0, p0=100.0,
+                 q_pos=0.1, q_vel=0.5, r=16.0, dt=0.01):
+        # State: [position, velocity]
+        self.x = np.array([x0, v0])
+        self.P = np.diag([p0, p0])
+        self.dt = dt
+
+        # State transition: x_new = x + v*dt
+        self.F = np.array([[1, dt],
+                           [0, 1]])
+
+        # Measurement: we observe position only
+        self.H = np.array([[1, 0]])
+
+        # Process noise
+        self.Q = np.array([[q_pos, 0],
+                           [0, q_vel]])
+
+        # Measurement noise
+        self.R = np.array([[r]])
+
+    def update(self, z):
+        """Predict then update with measurement z."""
+        # Predict
+        x_pred = self.F @ self.x
+        P_pred = self.F @ self.P @ self.F.T + self.Q
+
+        # Update
+        y = z - self.H @ x_pred             # innovation
+        S = self.H @ P_pred @ self.H.T + self.R  # innovation covariance
+        K = P_pred @ self.H.T @ np.linalg.inv(S)  # Kalman gain
+
+        self.x = x_pred + K @ np.array([y])
+        self.P = (np.eye(2) - K @ self.H) @ P_pred
+
+        return self.x[0]  # return position estimate
+
+
+kf = KalmanFilter1D(x0=measured[0], v0=0.0, p0=100.0,
+                     q_pos=0.5, q_vel=1.0, r=noise_std**2, dt=dt)
+kf_filtered = np.zeros(N)
+for i in range(N):
+    kf_filtered[i] = kf.update(measured[i])
+
+
+# --- Filter 3: Median filter (robust to outliers) ---
+def median_filter(data, window=5):
+    """Sliding median filter."""
+    filtered = np.zeros_like(data)
+    half = window // 2
+    for i in range(len(data)):
+        start = max(0, i - half)
+        end = min(len(data), i + half + 1)
+        filtered[i] = np.median(data[start:end])
+    return filtered
+
+
+med_filtered = median_filter(measured, window=7)
+
+
+# --- Plot comparison ---
+fig, axes = plt.subplots(4, 1, figsize=(14, 14), sharex=True)
+
+# Raw
+axes[0].plot(t, true_distance, 'g-', linewidth=2, label='True')
+axes[0].plot(t, measured, 'b.', markersize=1, alpha=0.5, label='Raw LiDAR')
+axes[0].set_title('Raw Measurement (with outliers)')
 axes[0].legend()
-axes[0].set_title('LiDAR Filtering Comparison')
+axes[0].set_ylabel('Distance [cm]')
 axes[0].grid(True, alpha=0.3)
 
-# Error comparison
-axes[1].plot(t, np.abs(true_dist - measured), 'r-', alpha=0.3, label='Raw Error')
-axes[1].plot(t, np.abs(true_dist - ma_filtered), 'orange', linewidth=1.5, label='MA Error')
-axes[1].plot(t, np.abs(true_dist - kf_filtered), 'b-', linewidth=1.5, label='KF Error')
-axes[1].set_xlabel('Time (s)')
-axes[1].set_ylabel('Absolute Error (cm)')
+# Moving Average
+axes[1].plot(t, true_distance, 'g-', linewidth=2, label='True')
+axes[1].plot(t, ma_filtered, 'r-', linewidth=1.5, label='Moving Avg (w=20)')
+axes[1].set_title('Moving Average Filter — introduces lag, fooled by outliers')
 axes[1].legend()
+axes[1].set_ylabel('Distance [cm]')
 axes[1].grid(True, alpha=0.3)
 
-raw_rmse = np.sqrt(np.mean((true_dist - measured)**2))
-ma_rmse = np.sqrt(np.mean((true_dist - ma_filtered)**2))
-kf_rmse = np.sqrt(np.mean((true_dist - kf_filtered)**2))
-axes[1].set_title(f'RMSE — Raw: {raw_rmse:.2f}  MA: {ma_rmse:.2f}  KF: {kf_rmse:.2f}')
+# Median
+axes[2].plot(t, true_distance, 'g-', linewidth=2, label='True')
+axes[2].plot(t, med_filtered, 'orange', linewidth=1.5, label='Median Filter (w=7)')
+axes[2].set_title('Median Filter — robust to outliers but introduces lag')
+axes[2].legend()
+axes[2].set_ylabel('Distance [cm]')
+axes[2].grid(True, alpha=0.3)
+
+# Kalman
+axes[3].plot(t, true_distance, 'g-', linewidth=2, label='True')
+axes[3].plot(t, kf_filtered, 'm-', linewidth=1.5, label='Kalman Filter (CV model)')
+axes[3].set_title('Kalman Filter — tracks transitions, adapts gain automatically')
+axes[3].legend()
+axes[3].set_ylabel('Distance [cm]')
+axes[3].set_xlabel('Time [s]')
+axes[3].grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('lidar_filtering.png', dpi=150)
+plt.savefig('lidar_filter_comparison.png', dpi=150)
 plt.show()
+
+# --- Quantitative comparison ---
+rmse_raw = np.sqrt(np.mean((measured - true_distance)**2))
+rmse_ma = np.sqrt(np.mean((ma_filtered - true_distance)**2))
+rmse_med = np.sqrt(np.mean((med_filtered - true_distance)**2))
+rmse_kf = np.sqrt(np.mean((kf_filtered - true_distance)**2))
+
+print(f"\n{'Filter':<25s} {'RMSE (cm)':>10s}")
+print("-" * 37)
+print(f"{'Raw (no filter)':<25s} {rmse_raw:10.2f}")
+print(f"{'Moving Average (w=20)':<25s} {rmse_ma:10.2f}")
+print(f"{'Median (w=7)':<25s} {rmse_med:10.2f}")
+print(f"{'Kalman Filter (CV)':<25s} {rmse_kf:10.2f}")
 ```
 
-### Lab 3: Depth Camera Stream
+**Expected results**: the Kalman filter achieves the lowest RMSE because:
+1. It uses a **constant-velocity model** that predicts motion during transitions (where moving average lags).
+2. It automatically adjusts its gain through the Kalman gain \(K\) — high gain when uncertain, low gain when confident.
+3. With the constant-velocity model, it tracks linear ramps without the phase lag of a moving average.
+
+The median filter handles outliers better than the moving average but still introduces lag. In practice, a **median pre-filter followed by a Kalman filter** is a robust combination for LiDAR data.
+
+### 11.4 Depth Camera Stream and Visualization
 
 ```python
-#!/usr/bin/env python3
-"""Read and visualize depth camera stream (Intel RealSense example)."""
+"""
+depth_camera_stream.py
+Capture and visualize RGB + Depth from Intel RealSense D435.
+Includes depth scale handling and basic alignment.
+"""
 
 import numpy as np
 import cv2
 
-# For Intel RealSense:
-# pip install pyrealsense2
 try:
     import pyrealsense2 as rs
+    HAS_REALSENSE = True
+except ImportError:
+    HAS_REALSENSE = False
+    print("pyrealsense2 not installed. Using synthetic data.")
 
+
+def create_realsense_pipeline():
+    """Initialize RealSense D435 pipeline with depth and color streams."""
     pipeline = rs.pipeline()
     config = rs.config()
+
+    # Enable depth and color streams
     config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
     config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
-    pipeline.start(config)
 
+    # Start streaming
+    profile = pipeline.start(config)
+
+    # Get depth scale (converts raw uint16 to meters)
+    depth_sensor = profile.get_device().first_depth_sensor()
+    depth_scale = depth_sensor.get_depth_scale()
+    print(f"Depth scale: {depth_scale:.6f} m/unit")
+
+    # Enable post-processing filters for cleaner depth
+    # (these run on the host CPU)
+    decimation = rs.decimation_filter()
+    decimation.set_option(rs.option.filter_magnitude, 2)
+
+    spatial = rs.spatial_filter()
+    spatial.set_option(rs.option.filter_magnitude, 2)
+    spatial.set_option(rs.option.filter_smooth_alpha, 0.5)
+
+    temporal = rs.temporal_filter()
+
+    hole_filling = rs.hole_filling_filter()
+
+    # Create alignment object (align depth to color frame)
     align = rs.align(rs.stream.color)
+
+    filters = [decimation, spatial, temporal, hole_filling]
+
+    return pipeline, align, depth_scale, filters
+
+
+def create_synthetic_frames():
+    """Generate synthetic depth and color frames for testing without hardware."""
+    # Synthetic color image with simple objects
+    color = np.zeros((480, 640, 3), dtype=np.uint8)
+    color[:] = [100, 80, 60]  # brown background
+    cv2.circle(color, (320, 240), 100, (0, 200, 0), -1)   # green sphere
+    cv2.rectangle(color, (100, 100), (250, 350), (200, 0, 0), -1)  # blue box
+
+    # Synthetic depth map (in mm, uint16)
+    depth = np.full((480, 640), 2000, dtype=np.uint16)  # 2m background
+
+    # Closer rectangular object at 1m
+    depth[100:350, 100:250] = 1000
+
+    # Even closer spherical object at 0.5m
+    Y, X = np.ogrid[:480, :640]
+    sphere_mask = (X - 320)**2 + (Y - 240)**2 < 100**2
+    depth[sphere_mask] = 500
+
+    # Add realistic noise (increases with distance)
+    noise_scale = depth.astype(np.float32) * 0.01  # 1% of distance
+    noise = (np.random.normal(0, 1, depth.shape) * noise_scale).astype(np.int16)
+    depth = np.clip(depth.astype(np.int16) + noise, 0, 10000).astype(np.uint16)
+
+    return color, depth
+
+
+def visualize_depth(depth_image, depth_scale=0.001, max_range_m=5.0):
+    """Convert raw depth image to colorized visualization."""
+    # Convert to meters
+    depth_m = depth_image.astype(np.float32) * depth_scale
+
+    # Normalize to 0-255 for colormap
+    depth_normalized = np.clip(depth_m / max_range_m, 0, 1)
+    depth_uint8 = (depth_normalized * 255).astype(np.uint8)
+
+    # Apply JET colormap (blue=close, red=far)
+    depth_colormap = cv2.applyColorMap(depth_uint8, cv2.COLORMAP_JET)
+
+    # Mark invalid pixels (depth = 0) as black
+    depth_colormap[depth_image == 0] = [0, 0, 0]
+
+    return depth_colormap
+
+
+def compute_histogram(depth_image, depth_scale=0.001, max_range_m=5.0, bins=100):
+    """Compute depth histogram for analysis."""
+    valid = depth_image[depth_image > 0].astype(np.float32) * depth_scale
+    hist, edges = np.histogram(valid, bins=bins, range=(0, max_range_m))
+    return hist, edges
+
+
+def main():
+    if HAS_REALSENSE:
+        pipeline, align, depth_scale, filters = create_realsense_pipeline()
+    else:
+        depth_scale = 0.001  # 1 mm per unit
+
+    print("Controls:")
+    print("  'q' - quit")
+    print("  's' - save snapshot")
+    print("  'f' - toggle post-processing filters")
+
+    use_filters = True
+    frame_count = 0
 
     try:
         while True:
-            frames = pipeline.wait_for_frames()
-            aligned = align.process(frames)
+            if HAS_REALSENSE:
+                frames = pipeline.wait_for_frames()
+                aligned_frames = align.process(frames)
 
-            depth_frame = aligned.get_depth_frame()
-            color_frame = aligned.get_color_frame()
-            if not depth_frame or not color_frame:
-                continue
+                depth_frame = aligned_frames.get_depth_frame()
+                color_frame = aligned_frames.get_color_frame()
 
-            depth_image = np.asanyarray(depth_frame.get_data())
-            color_image = np.asanyarray(color_frame.get_data())
+                if not depth_frame or not color_frame:
+                    continue
 
-            # Colorize depth for visualization
-            depth_colormap = cv2.applyColorMap(
-                cv2.convertScaleAbs(depth_image, alpha=0.03),
-                cv2.COLORMAP_JET
-            )
+                # Apply post-processing filters
+                if use_filters:
+                    for f in filters:
+                        depth_frame = f.process(depth_frame)
+
+                depth_image = np.asanyarray(depth_frame.get_data())
+                color_image = np.asanyarray(color_frame.get_data())
+            else:
+                color_image, depth_image = create_synthetic_frames()
+
+            # Visualize depth
+            depth_colormap = visualize_depth(depth_image, depth_scale)
+
+            # Show center pixel distance
+            cy, cx = depth_image.shape[0] // 2, depth_image.shape[1] // 2
+            center_dist = depth_image[cy, cx] * depth_scale
+            cv2.putText(color_image,
+                        f"Center: {center_dist:.3f} m",
+                        (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.8, (0, 255, 0), 2)
+
+            # Show valid pixel count
+            valid_pct = np.count_nonzero(depth_image) / depth_image.size * 100
+            cv2.putText(depth_colormap,
+                        f"Valid: {valid_pct:.1f}%",
+                        (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.8, (255, 255, 255), 2)
 
             # Side by side display
-            combined = np.hstack((color_image, depth_colormap))
+            combined = np.hstack([color_image, depth_colormap])
+            cv2.imshow('RGB | Depth', combined)
 
-            # Show distance at center pixel
-            center_dist = depth_frame.get_distance(320, 240)
-            cv2.putText(combined, f"Center: {center_dist:.2f}m",
-                       (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
-            cv2.imshow('RGB + Depth', combined)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
                 break
+            elif key == ord('s'):
+                cv2.imwrite(f'color_{frame_count:04d}.png', color_image)
+                cv2.imwrite(f'depth_color_{frame_count:04d}.png', depth_colormap)
+                np.save(f'depth_raw_{frame_count:04d}.npy', depth_image)
+                print(f"Snapshot {frame_count} saved!")
+                frame_count += 1
+            elif key == ord('f'):
+                use_filters = not use_filters
+                print(f"Filters: {'ON' if use_filters else 'OFF'}")
+
+            if not HAS_REALSENSE:
+                import time
+                time.sleep(0.033)  # simulate 30 fps
 
     finally:
-        pipeline.stop()
+        if HAS_REALSENSE:
+            pipeline.stop()
         cv2.destroyAllWindows()
 
-except ImportError:
-    print("pyrealsense2 not installed. Using OpenCV VideoCapture for generic depth camera.")
-    # Generic depth camera via V4L2
-    cap = cv2.VideoCapture(0)
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-        cv2.imshow('Camera', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    cap.release()
-    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()
+```
+
+### 11.5 RGB-Depth Alignment Analysis
+
+```python
+"""
+rgbd_alignment.py
+Demonstrate the importance of RGB-Depth alignment.
+Shows what happens when depth and color are NOT aligned vs aligned.
+"""
+
+import numpy as np
+import cv2
+import matplotlib.pyplot as plt
+
+
+def show_alignment_comparison():
+    """
+    Visualize misaligned vs aligned RGB-Depth overlay.
+
+    In real hardware, misalignment comes from the physical offset
+    (baseline ~55mm) between the depth sensor and RGB camera.
+    """
+    h, w = 480, 640
+
+    # Color image: vertical edge (brown wall | blue wall)
+    color = np.zeros((h, w, 3), dtype=np.uint8)
+    color[:, :320] = [200, 100, 50]   # left half: brown
+    color[:, 320:] = [50, 150, 200]   # right half: blue
+
+    # True depth: left half closer (1m), right half farther (3m)
+    depth_aligned = np.zeros((h, w), dtype=np.float32)
+    depth_aligned[:, :320] = 1.0
+    depth_aligned[:, 320:] = 3.0
+
+    # Misaligned depth: shifted by 20 pixels (simulating baseline offset)
+    shift = 20
+    depth_misaligned = np.zeros_like(depth_aligned)
+    depth_misaligned[:, shift:] = depth_aligned[:, :-shift]
+
+    # Create overlay visualizations
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+    # Original color
+    axes[0].imshow(cv2.cvtColor(color, cv2.COLOR_BGR2RGB))
+    axes[0].axvline(x=320, color='white', linestyle='--', linewidth=2)
+    axes[0].set_title('Color Image (edge at x=320)')
+    axes[0].axis('off')
+
+    # Misaligned overlay
+    overlay_mis = color.copy()
+    depth_vis_mis = (depth_misaligned * 80).astype(np.uint8)
+    edge_mis = cv2.Canny(depth_vis_mis, 50, 150)
+    overlay_mis[edge_mis > 0] = [0, 0, 255]  # red depth edge
+    axes[1].imshow(cv2.cvtColor(overlay_mis, cv2.COLOR_BGR2RGB))
+    axes[1].axvline(x=320, color='lime', linestyle='--', linewidth=2,
+                    label='Color edge')
+    axes[1].axvline(x=320 - shift, color='red', linestyle='--', linewidth=2,
+                    label='Depth edge')
+    axes[1].set_title('MISALIGNED: edges do not match')
+    axes[1].legend(loc='upper right')
+    axes[1].axis('off')
+
+    # Aligned overlay
+    overlay_ali = color.copy()
+    depth_vis_ali = (depth_aligned * 80).astype(np.uint8)
+    edge_ali = cv2.Canny(depth_vis_ali, 50, 150)
+    overlay_ali[edge_ali > 0] = [0, 0, 255]
+    axes[2].imshow(cv2.cvtColor(overlay_ali, cv2.COLOR_BGR2RGB))
+    axes[2].axvline(x=320, color='lime', linestyle='--', linewidth=2,
+                    label='Color edge')
+    axes[2].set_title('ALIGNED: edges match perfectly')
+    axes[2].legend(loc='upper right')
+    axes[2].axis('off')
+
+    plt.suptitle('RGB-Depth Alignment: Why It Matters', fontsize=14)
+    plt.tight_layout()
+    plt.savefig('alignment_comparison.png', dpi=150)
+    plt.show()
+
+    print("""
+    Why alignment matters for autonomous driving:
+    -----------------------------------------------
+    1. The depth sensor and RGB camera are physically separated (~55mm baseline)
+    2. Without alignment, pixel (u,v) in color != pixel (u,v) in depth
+    3. This means wrong 3D reconstruction: objects appear shifted
+    4. RealSense SDK: rs.align(rs.stream.color) reprojects depth onto color frame
+    5. After alignment: color pixel (u,v) and depth pixel (u,v) see the same point
+
+    For our car:
+    - Lane detection uses color → needs aligned depth to measure distance
+    - Obstacle detection uses depth → needs aligned color for classification
+    - SLAM (Day 12) requires consistent RGB-D pairs
+    """)
+
+
+def depth_to_pointcloud(depth_image, K, depth_scale=0.001):
+    """
+    Convert depth image to 3D point cloud using camera intrinsics.
+
+    This is the inverse of the pinhole projection (Day 11 preview):
+      X = (u - cx) * Z / fx
+      Y = (v - cy) * Z / fy
+      Z = depth * depth_scale
+
+    Args:
+        depth_image: HxW uint16 depth image
+        K: 3x3 intrinsic matrix
+        depth_scale: conversion factor to meters
+
+    Returns:
+        Nx3 array of 3D points
+    """
+    fx, fy = K[0, 0], K[1, 1]
+    cx, cy = K[0, 2], K[1, 2]
+
+    h, w = depth_image.shape
+    u, v = np.meshgrid(np.arange(w), np.arange(h))
+
+    z = depth_image.astype(np.float32) * depth_scale
+    valid = z > 0
+
+    x = (u[valid] - cx) * z[valid] / fx
+    y = (v[valid] - cy) * z[valid] / fy
+
+    points = np.stack([x, y, z[valid]], axis=-1)
+    return points
+
+
+# Run the demonstration
+show_alignment_comparison()
+
+# Example point cloud generation (preview of Day 11 concepts)
+print("\n--- Point Cloud Generation Preview ---")
+K_example = np.array([[615.0, 0, 320.0],
+                       [0, 615.0, 240.0],
+                       [0, 0, 1.0]])
+
+# Small synthetic depth image
+depth_small = np.array([[1000, 1500, 2000],
+                         [1200, 0, 1800],
+                         [1100, 1300, 1900]], dtype=np.uint16)
+
+points = depth_to_pointcloud(depth_small, K_example, depth_scale=0.001)
+print(f"Generated {len(points)} 3D points from {depth_small.size} pixels")
+print(f"(Skipped {depth_small.size - len(points)} invalid pixels with depth=0)")
+for i, pt in enumerate(points):
+    print(f"  Point {i}: ({pt[0]:.3f}, {pt[1]:.3f}, {pt[2]:.3f}) m")
 ```
 
 ---
 
-## 7. Review
+## Review
 
-### Key Takeaways
+Today we covered the physics and practice of distance sensing for autonomous vehicles.
 
-1. **Pulse ToF**: \(d = ct/2\) — simple, accurate, single-point
-2. **Phase-shift**: \(d = c\varphi/(4\pi f)\) — better precision, limited range
-3. **Triangulation**: Geometric, cheap, but limited to short range
-4. **Structured light depth camera**: IR pattern → deformation → depth map (great indoors)
-5. **ToF depth camera**: Phase-shift per pixel → depth map (better outdoors)
-6. **Kalman filter** smooths LiDAR data better than moving average (Day 8 connection)
+| Topic | Key equation / takeaway |
+|-------|------------------------|
+| Pulse ToF | \(d = \frac{c \cdot t}{2}\) |
+| Phase-shift ToF | \(d = \frac{c \cdot \phi}{4\pi f_{\text{mod}}}\) |
+| Max unambiguous range | \(d_{\max} = \frac{c}{2 f_{\text{mod}}}\) |
+| Four-bucket demodulation | \(\phi = \arctan\frac{S_3 - S_1}{S_0 - S_2}\) |
+| Triangulation | \(d = \frac{b \cdot f}{x}\), nonlinear, short range |
+| Structured light camera | Projects IR pattern, measures disparity, depth \(\propto 1/\text{disp}\) |
+| ToF depth camera | Per-pixel phase measurement, constant accuracy with distance |
+| Key insight | 1D ToF + pixel array = ToF depth camera |
+| Noise sources | Black surfaces, glass, sunlight, multipath, flying pixels |
+| Filtering | Kalman filter outperforms moving average (Day 8 connection) |
 
-### Sensor Selection for Our Car
+### Sensor Selection for Our Autonomous Car
 
-| Sensor | Use Case | Connection |
-|--------|----------|------------|
-| 1D LiDAR | Forward obstacle distance | UART |
-| Depth Camera | 3D mapping, obstacle avoidance | USB |
-| RGB Camera | Lane detection, object recognition | USB/MIPI CSI |
+| Sensor | Use Case | Interface | Why |
+|--------|----------|-----------|-----|
+| 1D LiDAR (TFmini-Plus) | Forward obstacle distance | UART | Fast, reliable, cheap |
+| Depth Camera (RealSense D435) | 3D mapping, obstacle avoidance | USB 3.0 | Rich depth map + RGB |
+| RGB Camera (built into D435) | Lane detection, object recognition | USB 3.0 | Color information for classification |
 
-### Looking Ahead
+### Connection to Previous Days
 
-Tomorrow (Day 11), we'll learn **camera geometry and calibration** — the mathematical framework that turns pixel coordinates into real-world measurements. This is essential for combining camera and depth data accurately.
+- **Day 8** (Kalman Filter): we applied the Kalman filter to LiDAR data, demonstrating the practical benefit of Bayesian filtering with a constant-velocity model.
+- **Day 9** (PID Control): the distance measurements from today's sensors can serve as the feedback signal for a distance-keeping PID controller (maintain 50 cm following distance).
+
+### What Comes Next
+
+In **Day 11**, we move from raw sensor hardware to **camera geometry and calibration**. We will derive the pinhole camera model, understand intrinsic and extrinsic parameters, correct lens distortion, and compute a Bird's Eye View transform. This is essential groundwork before we can do any meaningful computer vision on our depth camera images.

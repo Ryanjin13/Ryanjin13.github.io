@@ -1,6 +1,6 @@
 ---
 title: "Day 5 — Multithreading and Multiprocessing"
-date: 2026-03-10
+date: 2026-03-06
 description: "Process vs thread internals, race conditions, synchronization primitives, Python GIL, and IPC mechanisms for real-time robotics"
 categories: ["Autonomous Driving"]
 tags: ["Multithreading", "Multiprocessing", "Concurrency", "Python GIL", "IPC"]
